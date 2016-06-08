@@ -27,6 +27,7 @@ using namespace std;
 int main(int argc, char *argv[]){
     LOG << "-------------------------\nStarting music-player-hw-control " << endl;
     
+#if 0
     ///
     RPi_GPIO::exportPin(GPIO_UNMUTE);
     RPi_GPIO::setOutput(GPIO_UNMUTE);
@@ -54,6 +55,7 @@ int main(int argc, char *argv[]){
         //RPi_GPIO::write(GPIO_UNMUTE, 0);
         //this_thread::sleep_for(chrono::milliseconds(2000));
     }
+#endif
     
     LOG << "End World" << endl;
     return 0;

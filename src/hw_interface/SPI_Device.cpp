@@ -41,21 +41,21 @@ int SPI_Device::init_SPI(){
         exit (0);
     }
     if (ioctl(fd, SPI_IOC_WR_MODE, &mode) < 0){
-        LOG << "Error setting SPI mode to 3 : " << strerror(errno) << endl;
+        LOG << "Error setting SPI mode to " << mode <<": " << strerror(errno) << endl;
         exit (0);
     }
     
     //seams to be un-necessary coz redundant send data function
     //... delete later
     //set word length to 16 (0 means 8bit long)
-    /*if (ioctl (fd, SPI_IOC_WR_BITS_PER_WORD, &word_length) < 0){
+    if (ioctl (fd, SPI_IOC_WR_BITS_PER_WORD, &word_length) < 0){
         LOG << "Error setting word length to " << (8+word_length) << "bit : " << strerror(errno) << endl;
         exit (0);
-    }*/
-    /*if (ioctl (fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed)   < 0){
+    }
+    if (ioctl (fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed)   < 0){
         LOG << "Error setting clock speed to " << speed << " : " << strerror(errno) << endl;
         exit (0);
-    }*/
+    }
     
     return 0;
 }

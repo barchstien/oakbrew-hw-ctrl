@@ -9,7 +9,7 @@
 using namespace std;
 
 #define MCP3008_SPI_CPOL_CPHA 0b00
-#define MCP3008_SPI_SPEED 100000
+#define MCP3008_SPI_SPEED 10000000
 #define MCP3008_SPI_DELAY 0
 #define MCP3008_SPI_WL 0
 

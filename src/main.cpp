@@ -25,7 +25,7 @@ using namespace std;
 
 
 int main(int argc, char *argv[]){
-    LOG << "-------------------------\nStarting music-player-hw-control " << endl;
+    LOG << "-------------------------\nStarting oakbrew-hw-control " << endl;
     
 #if 0
     ///

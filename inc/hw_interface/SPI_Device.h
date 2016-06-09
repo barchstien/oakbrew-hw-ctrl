@@ -10,7 +10,7 @@ Class implementing SPI_Device MUST use init_SPI() and close_SPI() function */
 class SPI_Device {
 public:
     SPI_Device(int channel, int mode, int speed, int delay_usec, int w_length) 
-        : channel(channel), mode(mode), speed(speed), delay_usec(delay_usec), word_length(w_length) {}
+        : channel_(channel), mode_(mode), speed_(speed), delay_usec_(delay_usec), word_length_(w_length) {}
 protected:
     /** file descriptor to SPI device */
     int fd;
@@ -26,17 +26,17 @@ protected:
     //void send_spi_word(char c, char d);
     void send_buff(char* buff, int buff_len);
     
-    int channel;
+    int channel_;
     /** clock polarity & phase CPOL CPHA 
     b00 CPOL 0 CPHA 0
     b01 CPOL 0 CPHA 1
     b10 CPOL 0 CPHA 1
     b11 CPOL 1 CPHA 1 */
-    int mode;
-    int speed;
-    int delay_usec;
+    int mode_;
+    int speed_;
+    int delay_usec_;
     /** 0 means 8bit long */
-    int word_length;
+    int word_length_;
     
 };
 #endif

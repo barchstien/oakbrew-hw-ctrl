@@ -24,7 +24,7 @@ protected:
     int close_SPI();
     
     //void send_spi_word(char c, char d);
-    void send_buff(char* buff, int buff_len);
+    char* send_buff(char* buff, int buff_len);
     
     int channel_;
     /** clock polarity & phase CPOL CPHA 

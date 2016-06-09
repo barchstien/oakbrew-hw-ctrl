@@ -35,7 +35,7 @@ int SPI_Device::init_SPI(){
         exit (0);
     }
 
-    //open spi channel_ 0
+    //open spi channel_
     if ((fd = open(channel_str.c_str(), O_RDWR)) < 0){
         LOG << "Error openning SPI fd..." << endl;
         exit (0);
@@ -45,9 +45,9 @@ int SPI_Device::init_SPI(){
         exit (0);
     }
     
-    //seams to be un-necessary coz redundant send data function
-    //... delete later
-    //set word length to 16 (0 means 8bit long)
+    //seams to be un-necessary coz redundant with send data function
+    //... delete later, or keep that ?
+    //set word length (0 means 8bit long)
     if (ioctl (fd, SPI_IOC_WR_BITS_PER_WORD, &word_length_) < 0){
         LOG << "Error setting word length to " << (8+word_length_) << "bit : " << strerror(errno) << endl;
         exit (0);
@@ -65,28 +65,31 @@ int SPI_Device::close_SPI(){
 }
 
 //debug
-#include <bitset>
-//
+//#include <bitset>
+//#include <netinet/in.h>
 
-#include <netinet/in.h>
-
-void SPI_Device::send_buff(char* buff, int buff_len){
+char* SPI_Device::send_buff(char* tx_buff, int tx_buff_len){
     struct spi_ioc_transfer spi ;
     
     //debug
-    std::bitset<8> data(buff[1]);
+    /*std::bitset<8> data(buff[1]);
     std::bitset<8> cmd(buff[0]);
     int reg = ((int)buff[0]) >> 1;
     int r_w = (int)(buff[0] & 0b00000001);
     LOG << reg << " - W=0? " << r_w << " -cmd: " << cmd << " -data: " << data << endl;
+    */
     
-    spi.tx_buf        = (__u64)buff;
-    spi.rx_buf        = (__u64)0;
-    spi.len           = buff_len;
-    spi.delay_usecs   = delay_usec_;
-    spi.speed_hz      = speed_;
-    spi.bits_per_word = word_length_;
-    spi.cs_change     = true;
+    char* rx_buff = (char*)malloc(tx_buff_len);
+    
+    spi.tx_buf        = (__u64)tx_buff;
+    spi.rx_buf        = (__u64)rx_buff;
+    spi.len           = tx_buff_len;
+    spi.delay_usecs   = 0;//delay_usec_;
+    spi.speed_hz      = 0;//speed_;
+    spi.bits_per_word = 0;//word_length_;
+    spi.cs_change     = 0;//true;
 
     ioctl (fd, SPI_IOC_MESSAGE(1), &spi);
+    
+    return rx_buff;
 }

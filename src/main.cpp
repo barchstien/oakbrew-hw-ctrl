@@ -3,7 +3,7 @@
 
 #include "hw_interface/RPi_GPIO.h"
 //#include "hw_interface/SPI_Device.h"
-#include "hw_interface/PCM512x_spi.h"
+#include "hw_interface/MCP3008.h"
 
 #include <chrono>
 #include <vector>
@@ -27,6 +27,14 @@ using namespace std;
 int main(int argc, char *argv[]){
     LOG << "-------------------------\nStarting oakbrew-hw-control " << endl;
     
+    MCP3008 adc(0);
+    
+    uint32_t v = 0;
+    while (true){
+        v = adc.get_value(1);
+        LOG << "ADC 1 : " << v << std::endl;
+        this_thread::sleep_for(chrono::milliseconds(1000));
+    }
 #if 0
     ///
     RPi_GPIO::exportPin(GPIO_UNMUTE);

@@ -39,4 +39,16 @@
 #define OUTPUT_MUTE_ON  0b00000000
 #define OUTPUT_MUTE_OFF 0b00000001
 
+// Conclusion :
+// Scale volume from -87db to +14db, total 101 steps
+// volume = 8 * V2_8db + 8 * V1_8db + V1_1db
+// from ADC, get targeted volume, that uses 1024 steps
+// divide ADC by 10 TODO find a way to avoid "edge" values leading to lots of volume change
+// |--> keep current_val, which is ((old_read + 5) % 10)
+// |--> Only change volume when ((new_read + 5) % 10) changes from current_val
+// 
+// V1_1db = Target_V % 8
+// V1_8db = Target_V / 8
+// V2_8db = Target_V / 8
+
 

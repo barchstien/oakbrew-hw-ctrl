@@ -19,7 +19,9 @@ add_executable(oakbrew-hw-control
     src/hw_interface/SwitchButton.cpp
     src/hw_interface/LedControl.cpp
     src/hw_interface/PCM512x_spi.cpp
-    src/hw_interface/MCP3008.cpp)
+    src/hw_interface/MCP3008.cpp
+    src/hw_interface/I2C_Device.cpp
+    src/hw_interface/TDA7468.cpp)
 
 include_directories(inc)
 

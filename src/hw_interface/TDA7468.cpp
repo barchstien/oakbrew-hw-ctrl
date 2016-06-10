@@ -22,10 +22,18 @@
 #define MUTE_ON        0b00000100
 #define MUTE_OFF       0b00000000
 
-//VOLUME
+//INPUT GAIN
+//0 to 14db, 2db steps, 3 lowest bit
+//this is just after input select
 
+//VOLUME (I guess 1 and 2 mean left and right ?
+//[0db; -64db[ on lowest 6 bit (applied before treble/bass)
+//+ n * 8db on highest 2 bit (applied after treble/bass)
 
 //TREBLE & BASS
+//[-14db; 14db] by step 2db, 4bit each
+//bass 4 hihest bit, treble 4 lowest
+//0 = -14db, 7 = 0db, MSb is sign (0 means -, 1 means +)
 
 //OUTPUT
 #define OUTPUT_MUTE_ON  0b00000000

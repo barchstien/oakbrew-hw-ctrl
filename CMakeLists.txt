@@ -6,6 +6,11 @@ cmake_minimum_required(VERSION 3.0)
 project(oakbrew-hw-control)
 add_definitions(-std=c++11)
 
+include_directories(inc)
+
+#include_directories(/home/alarm/dev/i2c-tools/include)
+#link_directories(/home/alarm/dev/i2c-tools/lib)
+
 add_executable(oakbrew-hw-control
     src/main.cpp
     src/module.cpp
@@ -23,9 +28,13 @@ add_executable(oakbrew-hw-control
     src/hw_interface/I2C_Device.cpp
     src/hw_interface/TDA7468.cpp)
 
-include_directories(inc)
+# Your-external "mylib"
+##add_library( i2c SHARED IMPORTED )
+# You can define two import-locations: one for debug and one for release.
+##set_target_properties( i2c PROPERTIES IMPORTED_LOCATION (/home/alarm/dev/i2c-tools/lib/ ))
 
 # if no link to pthread, runtime error when starting thread
 find_package(Threads REQUIRED)
+#TARGET_LINK_LIBRARIES(oakbrew-hw-control ${CMAKE_THREAD_LIBS_INIT} i2c)
 TARGET_LINK_LIBRARIES(oakbrew-hw-control ${CMAKE_THREAD_LIBS_INIT})
 

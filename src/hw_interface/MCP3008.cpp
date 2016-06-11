@@ -76,20 +76,20 @@ uint16_t MCP3008::get_value(unsigned int channel){
     tmp = 0b10000000 | tmp;
     char cmd[3]     = {0b00000001, tmp, 0};
     //char rx_buff[3] = {0, 0, 0};
-    
+#if 0
     for (int i=0; i<3; i++){
         std::bitset<8> x(cmd[i]);
         std::cout << "cmd[" << i << "] : " << x << std::endl;
     }
-    
+#endif
     char* rx_buff = 0;
     rx_buff = send_buff(cmd, 3);
-    
+#if 0
     for (int i=0; i<3; i++){
         std::bitset<8> x(rx_buff[i]);
         std::cout << "rx[" << i << "] : " << x << std::endl;
     }
-    
+#endif
     uint16_t v = 0;
     memcpy(&v, rx_buff + 1, 2);
     v = ntohs(v);

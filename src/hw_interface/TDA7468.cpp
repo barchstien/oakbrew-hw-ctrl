@@ -98,14 +98,14 @@ void TDA7468::volume(int v){
     buff[0] = SUB_ADDR_VOLUME_LEFT;
     buff[1] = 0;
     buff[1] = (v2_8db << 6) | (v1_8db << 3) | v1_1db;
-    write_buff(buff, buff_len);
+    write_byte_data(buff[0], buff[1]);
     
     buff[0] = SUB_ADDR_VOLUME_RIGHT;
-    write_buff(buff, buff_len);
+    write_byte_data(buff[0], buff[1]);
     
     buff[0] = SUB_ADDR_INPUT_GAIN;
     buff[1] = input_gain;
-    write_buff(buff, buff_len);
+    write_byte_data(buff[0], buff[1]);
 }
 
 
@@ -130,7 +130,7 @@ void TDA7468::bass(int b){
     
     buff[0] = SUB_ADDR_TREBLE_BASS;
     buff[1] = encode_bass_treble(bass_, treble_);
-    write_buff(buff, buff_len);
+    write_byte_data(buff[0], buff[1]);
 }
 
 
@@ -155,7 +155,7 @@ void TDA7468::treble(int t){
     
     buff[0] = SUB_ADDR_TREBLE_BASS;
     buff[1] = encode_bass_treble(bass_, treble_);
-    write_buff(buff, buff_len);
+    write_byte_data(buff[0], buff[1]);
 }
 
 
@@ -174,7 +174,7 @@ void TDA7468::mute(bool m){
     }else{
         buff[1] = OUTPUT_MUTE_OFF;
     }
-    write_buff(buff, buff_len);
+    write_byte_data(buff[0], buff[1]);
 }
 
 int TDA7468::input(){
@@ -198,8 +198,8 @@ void TDA7468::input(int n){
     int buff_len = 2;
     
     buff[0] = SUB_ADDR_INPUT_SELECT_MIC;
-    buff[1] = (n - 1) | INPUT_MIC_OFF;
-    write_buff(buff, buff_len);
+    buff[1] = (n - 1);// | INPUT_MIC_OFF;
+    write_byte_data(buff[0], buff[1]);
 }
 
 

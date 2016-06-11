@@ -52,13 +52,24 @@ int I2C_Device::close_I2C(){
     close(fd_);
 }
 
+//debug
+#include <bitset>
+
 int I2C_Device::write_buff(uint8_t* buff, int buff_len){
+
+    //debug
+    LOG << "writting to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : " << std::endl;
+    for (int i=0; i<buff_len; i++){
+        std::bitset<8> x(buff[i]);
+        std::cout << "buff[" << i << "] : " << x << std::endl;
+    }
+
     int ret = write(fd_, buff, buff_len);
     if (ret < 0){
         int err = errno;
-        LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << addr_ << ") : " << strerror(err) << std::endl;
+        LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : " << strerror(err) << std::endl;
     }else if (ret != buff_len){
-        LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << addr_ << ") : not all bytes sent" << std::endl;
+        LOG << "error not enough writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : not all bytes sent" << std::endl;
     }
     //? TODO, try re-write if not all written ?
     

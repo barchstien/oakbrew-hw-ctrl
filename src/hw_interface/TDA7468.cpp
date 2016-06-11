@@ -1,5 +1,6 @@
 #include "hw_interface/TDA7468.h"
 #include <stdlib.h>
+#include "util.h"
 
 //use like this : INCREMENTAL_BUS_ACTIVE | SUB_ADDR_XXX
 #define INCREMENTAL_BUS_ACTIVE 0b00010000
@@ -21,6 +22,9 @@
 //? OR with INPUT_SELECT_X ?
 #define INPUT_MUTE_ON        0b00000100
 #define INPUT_MUTE_OFF       0b00000000
+//to OR with previous
+#define INPUT_MIC_ON  0b00000000
+#define INPUT_MIC_OFF 0b00100000
 
 //INPUT GAIN
 //0 to 14db, 2db steps, 3 lowest bit
@@ -183,6 +187,7 @@ void TDA7468::input(int n){
     }else if (n > 4){
         n = 4;
     }
+    LOG << "swictching to input number : " << n << std::endl;
     if (input_ == n){
         return;
     }
@@ -193,7 +198,7 @@ void TDA7468::input(int n){
     int buff_len = 2;
     
     buff[0] = SUB_ADDR_INPUT_SELECT_MIC;
-    buff[1] = n - 1;
+    buff[1] = (n - 1) | INPUT_MIC_OFF;
     write_buff(buff, buff_len);
 }
 

@@ -2,8 +2,8 @@
 #include "util.h"
 
 #include "hw_interface/RPi_GPIO.h"
-//#include "hw_interface/SPI_Device.h"
 #include "hw_interface/MCP3008.h"
+#include "hw_interface/TDA7468.h"
 
 #include <chrono>
 #include <vector>
@@ -28,12 +28,25 @@ int main(int argc, char *argv[]){
     LOG << "-------------------------\nStarting oakbrew-hw-control " << endl;
     
     MCP3008 adc(0);
+    TDA7468 sound_ctrl;
+    
+    sound_ctrl.mute(false);
+    sound_ctrl.volume(0);
     
     uint32_t v = 0;
+    int i = 1;
     while (true){
         v = adc.get_value(1);
         LOG << "ADC 1 : " << v << std::endl;
-        this_thread::sleep_for(chrono::milliseconds(1000));
+        
+        //switch an inout atfer another
+        sound_ctrl.input(i);
+        i++;
+        if (i > 4){
+            i = 1;
+        }
+        
+        this_thread::sleep_for(chrono::milliseconds(10000));
     }
 #if 0
     ///

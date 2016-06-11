@@ -5,11 +5,18 @@
 
 class TDA7468 : public I2C_Device {
 public:
-    TDA7468(uint8_t addr=0x44, int channel=0) 
+    TDA7468(uint8_t addr=0x44, int channel=1) 
         : I2C_Device(addr, channel), 
         volume_(0xffff), input_gain_(0xffff), bass_(0xffff), treble_(0xffff), 
         mute_(false), input_(0xffff), balance_(0xffff)
-    {}
+    {
+        init_I2C();
+    }
+    
+    ~TDA7468()
+    {
+        close_I2C();
+    }
 
     /** get/set volume [-87db : +14db], 1db step for v<=0, 2db step v>0
     set using Volume1 in 1db and 8db steps, Volume2 and input gain */

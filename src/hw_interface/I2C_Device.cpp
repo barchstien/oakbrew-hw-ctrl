@@ -37,11 +37,11 @@ int I2C_Device::init_I2C(){
     }
 
     //open spi channel_
-    if ((fd = open(channel_str.c_str(), O_RDWR)) < 0){
+    if ((fd_ = open(channel_str.c_str(), O_RDWR)) < 0){
         LOG << "Error openning I2C device : " << channel_str << endl;
         exit (0);
     }
-    if (ioctl(fd, I2C_SLAVE, addr_) < 0){
+    if (ioctl(fd_, I2C_SLAVE, addr_) < 0){
         LOG << "Error setting I2C slave address to " << addr_ <<": " << strerror(errno) << endl;
         exit (0);
     }
@@ -49,6 +49,19 @@ int I2C_Device::init_I2C(){
 }
 
 int I2C_Device::close_I2C(){
-    close(fd);
+    close(fd_);
+}
+
+int I2C_Device::write_buff(uint8_t* buff, int buff_len){
+    int ret = write(fd_, buff, buff_len);
+    if (ret < 0){
+        int err = errno;
+        LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << addr_ << ") : " << strerror(err) << std::endl;
+    }else if (ret != buff_len){
+        LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << addr_ << ") : not all bytes sent" << std::endl;
+    }
+    //? TODO, try re-write if not all written ?
+    
+    return ret;
 }
 

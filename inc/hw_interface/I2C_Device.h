@@ -12,7 +12,7 @@ public:
         : addr_(addr), channel_(channel) {}
 protected:
     /** file descriptor to I2C device */
-    int fd;
+    int fd_;
     
     int init_I2C();
     
@@ -22,5 +22,7 @@ protected:
     int channel_;
     uint8_t addr_;
     
+    int write_buff(uint8_t* buff, int buff_len);
+    //TODO read()
 };
 #endif

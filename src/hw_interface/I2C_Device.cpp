@@ -83,6 +83,9 @@ int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
     //int ret = write(fd_, buff, buff_len);
     //int ret = i2c_smbus_write_byte_data(fd_, cmd, data);
     
+    //if above not work, also try with
+    //  I2C_SMBUS_BYTE_DATA (instead of block data)
+    //  i2c_data.byte = data (ignore .block)
     struct i2c_smbus_ioctl_data args;
     //read or write
     args.read_write = I2C_SMBUS_WRITE;
@@ -104,7 +107,7 @@ int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
     }/*else if (ret != buff_len){
         LOG << "error not enough writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : not all bytes sent" << std::endl;
     }*/
-    LOG << "write_byte_data : " << ret << std::endl;
+    LOG << "ret : " << ret << std::endl;
     //? TODO, try re-write if not all written ?
     
     return ret;

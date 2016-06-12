@@ -74,13 +74,16 @@ int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
     buff[0] = cmd;
     buff[1] = data;
     
-    int ret = 0;
-    std::stringstream ss;
+    //int ret = 0;
+    /*std::stringstream ss;
     ss << "i2cset -y 1 0x44 0x" << std::hex << (int)cmd << " 0x" << (int)data << std::dec;
     LOG << "----" << ss.str() << "-----" << std::endl;
     std::string s = Util::exec_read_bash(ss.str());
+    */
     
-    //int ret = write(fd_, buff, buff_len);
+    int ret = write(fd_, buff, buff_len);
+    
+    ret = i2c_smbus_write_byte(fd_, 0xAA);
     //int ret = i2c_smbus_write_byte_data(fd_, cmd, data);
     
     if (ret < 0){

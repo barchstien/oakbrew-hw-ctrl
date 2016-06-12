@@ -10,12 +10,12 @@ public:
         volume_(0xffff), input_gain_(0xffff), bass_(0xffff), treble_(0xffff), 
         mute_(false), input_(0xffff), balance_(0xffff)
     {
-        //init_I2C();
+        init_I2C();
     }
     
     ~TDA7468()
     {
-        //close_I2C();
+        close_I2C();
     }
 
     /** get/set volume [-87db : +14db], 1db step for v<=0, 2db step v>0

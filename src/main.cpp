@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include <cmath>
+
 /** pin map */
 #define GPIO_UNMUTE 26
 
@@ -36,8 +38,8 @@ int main(int argc, char *argv[]){
     uint32_t v = 0;
     int i = 1;
     while (true){
-        v = adc.get_value(1);
-        LOG << "ADC 1 : " << v << std::endl;
+        //v = adc.get_value(1);
+        //LOG << "ADC 1 : " << (v) << std::endl;
         
         //switch an inout atfer another
         sound_ctrl.input(i);

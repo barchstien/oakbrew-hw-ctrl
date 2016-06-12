@@ -16,7 +16,7 @@ protected:
     
     int init_I2C();
     
-    /** close the I2C communication by closing the file descriptor on /dev/i2c-1 */
+    /** close file descriptor to /dev/i2c-n */
     int close_I2C();
     
     int channel_;

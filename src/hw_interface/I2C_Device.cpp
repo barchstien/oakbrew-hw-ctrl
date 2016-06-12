@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-//#include <linux/i2c.h>
+#include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 //#include <i2c/smbus.h>
 //#include "linux/i2c-dev.h"
@@ -74,17 +74,29 @@ int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
     buff[0] = cmd;
     buff[1] = data;
     
-    //int ret = 0;
+    int ret = 0;
     /*std::stringstream ss;
     ss << "i2cset -y 1 0x44 0x" << std::hex << (int)cmd << " 0x" << (int)data << std::dec;
     LOG << "----" << ss.str() << "-----" << std::endl;
     std::string s = Util::exec_read_bash(ss.str());
     */
-    
-    int ret = write(fd_, buff, buff_len);
-    
-    ret = i2c_smbus_write_byte(fd_, 0xAA);
+    //int ret = write(fd_, buff, buff_len);
     //int ret = i2c_smbus_write_byte_data(fd_, cmd, data);
+    
+    struct i2c_smbus_ioctl_data args;
+    //read or write
+    args.read_write = I2C_SMBUS_WRITE;
+    //sub-addr
+    args.command = cmd;
+    args.size = I2C_SMBUS_BLOCK_DATA;
+    //array [length, data0, ... dataN]
+    union i2c_smbus_data i2c_data;
+    i2c_data.block[0] = 1;
+    i2c_data.block[1] = data;
+    
+    args.data = &i2c_data;
+    
+    ret = ioctl(fd_, I2C_SMBUS, &args);
     
     if (ret < 0){
         int err = errno;

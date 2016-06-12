@@ -3,6 +3,10 @@
 
 #include "hw_interface/I2C_Device.h"
 
+#define POWER_ON_RESET  0b11111110
+#include <thread>
+#include <chrono>
+
 class TDA7468 : public I2C_Device {
 public:
     TDA7468(uint8_t addr=0x44, int channel=1) 
@@ -11,6 +15,8 @@ public:
         mute_(false), input_(0xffff), balance_(0xffff)
     {
         init_I2C();
+        //write_byte(POWER_ON_RESET);
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     
     ~TDA7468()

@@ -22,6 +22,7 @@ protected:
     int channel_;
     uint8_t addr_;
     
+    int write_byte(uint8_t cmd);
     int write_byte_data(uint8_t cmd, uint8_t data);
     //TODO read()
 };

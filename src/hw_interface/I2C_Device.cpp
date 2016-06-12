@@ -61,6 +61,33 @@ int I2C_Device::close_I2C(){
 //debug
 #include <bitset>
 
+int I2C_Device::write_byte(uint8_t cmd){
+
+    //debug
+    std::bitset<8> c(cmd);
+    LOG << "writting to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << ") : " << 
+    c << std::dec << std::endl;
+
+    int ret = 0;
+    struct i2c_smbus_ioctl_data args;
+    //read or write
+    args.read_write = I2C_SMBUS_WRITE;
+    //sub-addr
+    args.command = cmd;
+    args.size = I2C_SMBUS_BYTE;
+    args.data = nullptr;
+    
+    ret = ioctl(fd_, I2C_SMBUS, &args);
+    
+    if (ret < 0){
+        int err = errno;
+        LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : " << strerror(err) << std::endl;
+    }
+    LOG << "ret : " << ret << std::endl;
+
+    return ret;
+}
+
 int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
 
     //debug

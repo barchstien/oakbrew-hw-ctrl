@@ -118,11 +118,14 @@ int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
     args.read_write = I2C_SMBUS_WRITE;
     //sub-addr
     args.command = cmd;
-    args.size = I2C_SMBUS_BLOCK_DATA;
+    args.size = I2C_SMBUS_BYTE_DATA;
+    
+    //args.size = I2C_SMBUS_BLOCK_DATA;
     //array [length, data0, ... dataN]
     union i2c_smbus_data i2c_data;
-    i2c_data.block[0] = 1;
-    i2c_data.block[1] = data;
+    //i2c_data.block[0] = 1;
+    //i2c_data.block[1] = data;
+    i2c_data.byte = data;
     
     args.data = &i2c_data;
     

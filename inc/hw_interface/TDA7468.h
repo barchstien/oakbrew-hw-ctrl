@@ -3,26 +3,10 @@
 
 #include "hw_interface/I2C_Device.h"
 
-#define POWER_ON_RESET  0b11111110
-#include <thread>
-#include <chrono>
-
 class TDA7468 : public I2C_Device {
 public:
-    TDA7468(uint8_t addr=0x44, int channel=1) 
-        : I2C_Device(addr, channel), 
-        volume_(0xffff), input_gain_(0xffff), bass_(0xffff), treble_(0xffff), 
-        mute_(false), input_(0xffff), balance_(0xffff)
-    {
-        init_I2C();
-        //write_byte(POWER_ON_RESET);
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
-    
-    ~TDA7468()
-    {
-        close_I2C();
-    }
+    TDA7468(uint8_t addr=0x44, int channel=1);
+    ~TDA7468();
 
     /** get/set volume [-87db : +14db], 1db step for v<=0, 2db step v>0
     set using Volume1 in 1db and 8db steps, Volume2 and input gain */
@@ -37,8 +21,8 @@ public:
     int treble();
     void treble(int t);
     
-    bool mute();
-    void mute(bool m);
+    bool mute_output();
+    void mute_output(bool m);
     
     /** (1 : 4] **/
     int input();

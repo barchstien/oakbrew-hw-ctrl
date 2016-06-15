@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include "util.h"
 
+#include <thread>
+#include <chrono>
+
+//not sure how it is used
+#define POWER_ON_RESET  0b11111110
+
 //use like this : INCREMENTAL_BUS_ACTIVE | SUB_ADDR_XXX
 #define INCREMENTAL_BUS_ACTIVE 0b00010000
 
@@ -20,8 +26,8 @@
 #define INPUT_SELECT_3 0b00000010
 #define INPUT_SELECT_4 0b00000011
 //? OR with INPUT_SELECT_X ?
-#define INPUT_MUTE_ON        0b00000100
-#define INPUT_MUTE_OFF       0b00000000
+//#define INPUT_MUTE_ON        0b00000100
+//#define INPUT_MUTE_OFF       0b00000000
 //to OR with previous
 #define INPUT_MIC_ON  0b00000000
 #define INPUT_MIC_OFF 0b00100000
@@ -60,7 +66,33 @@
 //   sel V1_1db, V1_8db and V2_8db to 0
 //   set V_in_gain = Target_V / 2
 
+TDA7468::TDA7468(uint8_t addr, int channel) 
+    : I2C_Device(addr, channel), 
+    volume_(0xffff), input_gain_(0xffff), bass_(0xffff), treble_(0xffff), 
+    mute_(false), input_(0xffff), balance_(0xffff)
+{
+    LOG << "start init TDA 7468" << std::endl;
+    init_I2C();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    write_byte(POWER_ON_RESET);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    
+    //disable suround
+    write_byte_data(SUB_ADDR_SURROUND, 0b00000000);
+    //trebel & bass to mid point for test
+    write_byte_data(SUB_ADDR_TREBLE_BASS, 0b11111111);
+    //turn off bass ALC
+    write_byte_data(SUB_ADDR_BASS_ALC, 0b00000000);
+    //un-mute output
+    mute_output(false);
+    
+    LOG << "end init TDA 7468" << std::endl;
+}
 
+TDA7468::~TDA7468()
+{
+    close_I2C();
+}
 
 int TDA7468::volume(){
     return volume_;
@@ -159,11 +191,11 @@ void TDA7468::treble(int t){
 }
 
 
-bool TDA7468::mute(){
+bool TDA7468::mute_output(){
     return mute_;
 }
 
-void TDA7468::mute(bool m){
+void TDA7468::mute_output(bool m){
     uint8_t buff[2];
     int buff_len = 2;
     
@@ -188,9 +220,9 @@ void TDA7468::input(int n){
         n = 4;
     }
     LOG << "swictching to input number : " << n << std::endl;
-    if (input_ == n){
+    /*if (input_ == n){
         return;
-    }
+    }*/
     
     input_ = n;
     
@@ -198,7 +230,7 @@ void TDA7468::input(int n){
     int buff_len = 2;
     
     buff[0] = SUB_ADDR_INPUT_SELECT_MIC;
-    buff[1] = (n - 1);// | INPUT_MIC_OFF;
+    buff[1] = (n - 1) | INPUT_MIC_OFF;
     write_byte_data(buff[0], buff[1]);
 }
 

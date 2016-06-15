@@ -32,23 +32,33 @@ int main(int argc, char *argv[]){
     MCP3008 adc(0);
     TDA7468 sound_ctrl;
     
-    sound_ctrl.mute(false);
+    //this_thread::sleep_for(chrono::milliseconds(500));
+    //sound_ctrl.mute(false);
+    //this_thread::sleep_for(chrono::milliseconds(500));
+    //set to 14 to enable input gain
     sound_ctrl.volume(0);
+    this_thread::sleep_for(chrono::milliseconds(10));
+
+    //DAC is input 1
+    sound_ctrl.input(1);
+    this_thread::sleep_for(chrono::milliseconds(500));
+    
+    
     
     uint32_t v = 0;
     int i = 1;
-    while (true){
+    while (false){
         //v = adc.get_value(1);
         //LOG << "ADC 1 : " << (v) << std::endl;
         
         //switch an inout atfer another
-        sound_ctrl.input(i);
+        //sound_ctrl.input(i);
         i++;
         if (i > 4){
             i = 1;
         }
         
-        this_thread::sleep_for(chrono::milliseconds(10000));
+        this_thread::sleep_for(chrono::milliseconds(100));
     }
 #if 0
     ///

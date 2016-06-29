@@ -51,11 +51,13 @@ int I2C_Device::init_I2C(){
         LOG << "Error setting I2C slave address to 0x" << std::hex << (int)addr_ << std::dec <<": " << strerror(errno) << endl;
         exit (0);
     }
+    LOG << "init_I2C() done" << std::endl;
     return 0;
 }
 
 int I2C_Device::close_I2C(){
     close(fd_);
+    LOG << "close_I2C() done" << std::endl;
 }
 
 //debug

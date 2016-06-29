@@ -28,7 +28,7 @@ using namespace std;
 
 int main(int argc, char *argv[]){
     LOG << "-------------------------\nStarting oakbrew-hw-control " << endl;
-    
+        
     MCP3008 adc(0);
     TDA7468 sound_ctrl;
     
@@ -36,29 +36,29 @@ int main(int argc, char *argv[]){
     //sound_ctrl.mute(false);
     //this_thread::sleep_for(chrono::milliseconds(500));
     //set to 14 to enable input gain
-    sound_ctrl.volume(0);
-    this_thread::sleep_for(chrono::milliseconds(10));
+    //sound_ctrl.volume(0);
+    //this_thread::sleep_for(chrono::milliseconds(10));
 
     //DAC is input 1
-    sound_ctrl.input(1);
-    this_thread::sleep_for(chrono::milliseconds(500));
+    //sound_ctrl.input(1);
+    //this_thread::sleep_for(chrono::milliseconds(500));
     
     
     
     uint32_t v = 0;
     int i = 1;
-    while (false){
+    while (true){
         //v = adc.get_value(1);
         //LOG << "ADC 1 : " << (v) << std::endl;
         
-        //switch an inout atfer another
+        //switch an input atfer another
         //sound_ctrl.input(i);
         i++;
         if (i > 4){
             i = 1;
         }
         
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(chrono::milliseconds(5000));
     }
 #if 0
     ///

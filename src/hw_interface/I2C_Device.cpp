@@ -48,8 +48,8 @@ int I2C_Device::init_I2C(){
         exit (0);
     }
     if (ioctl(fd_, I2C_SLAVE, addr_) < 0){
-        LOG << "Error setting I2C slave address to 0x" << std::hex << (int)addr_ << std::dec <<": " << strerror(errno) << endl;
-        exit (0);
+        int err = errno;
+        LOG << "Error setting I2C slave address to 0x" << std::hex << (int)addr_ << std::dec <<": " << strerror(err) << endl;
     }
     LOG << "init_I2C() done" << std::endl;
     return 0;
@@ -67,7 +67,7 @@ int I2C_Device::write_byte(uint8_t cmd){
 
     //debug
     std::bitset<8> c(cmd);
-    LOG << "writting to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << ") : " << 
+    LOG << "writing to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << ") : " << 
     c << std::dec << std::endl;
 
     int ret = 0;
@@ -97,24 +97,9 @@ int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
     std::bitset<8> d(data);
     LOG << "writting to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << ") : " << 
     c << " : " << d << std::dec << std::endl;
-
-    char buff[2];
-    int buff_len = 2;
-    buff[0] = cmd;
-    buff[1] = data;
     
     int ret = 0;
-    /*std::stringstream ss;
-    ss << "i2cset -y 1 0x44 0x" << std::hex << (int)cmd << " 0x" << (int)data << std::dec;
-    LOG << "----" << ss.str() << "-----" << std::endl;
-    std::string s = Util::exec_read_bash(ss.str());
-    */
-    //int ret = write(fd_, buff, buff_len);
-    //int ret = i2c_smbus_write_byte_data(fd_, cmd, data);
     
-    //if above not work, also try with
-    //  I2C_SMBUS_BYTE_DATA (instead of block data)
-    //  i2c_data.byte = data (ignore .block)
     struct i2c_smbus_ioctl_data args;
     //read or write
     args.read_write = I2C_SMBUS_WRITE;
@@ -136,11 +121,8 @@ int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
     if (ret < 0){
         int err = errno;
         LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : " << strerror(err) << std::endl;
-    }/*else if (ret != buff_len){
-        LOG << "error not enough writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : not all bytes sent" << std::endl;
-    }*/
+    }
     LOG << "ret : " << ret << std::endl;
-    //? TODO, try re-write if not all written ?
     
     return ret;
 }

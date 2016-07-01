@@ -79,28 +79,29 @@ TDA7468::TDA7468(uint8_t addr, int channel)
     //write_byte(POWER_ON_RESET);
     //std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     
-    //disable suround
-    ///write_byte_data(SUB_ADDR_SURROUND, 0b00000000);
-    //std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    //trebel & bass to mid point for test
-    //write_byte_data(SUB_ADDR_TREBLE_BASS, 0b11111111);
-    //std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    //turn off bass ALC
-    //write_byte_data(SUB_ADDR_BASS_ALC, 0b00000000);
-    //std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    
     //DAC is input 1
     input(1);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
-    //meaning 0 attenuation
+    //meaning 0 attenuation and 0 input gain
     volume(0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
+    
+    //disable suround
+    /write_byte_data(SUB_ADDR_SURROUND, 0b00011000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
+    
+    //trebel & bass to mid point for test
+    write_byte_data(SUB_ADDR_TREBLE_BASS, 0b11111111);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
     //un-mute output
     mute_output(false);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
+    //turn off bass ALC
+    write_byte_data(SUB_ADDR_BASS_ALC, 0b00000000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
     //write_byte(POWER_ON_RESET);
     //std::this_thread::sleep_for(std::chrono::milliseconds(1000));

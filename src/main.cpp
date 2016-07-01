@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
     LOG << "-------------------------\nStarting oakbrew-hw-control " << endl;
         
     MCP3008 adc(0);
-    //TDA7468 sound_ctrl;
+    TDA7468 sound_ctrl;
     
     //this_thread::sleep_for(chrono::milliseconds(500));
     //sound_ctrl.mute(false);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
     
     uint32_t v = 0;
     int i = 1;
-    while (true){
+    while (false){
         
         TDA7468 sound_ctrl;
         
@@ -88,6 +88,7 @@ int main(int argc, char *argv[]){
     }
 #endif
     
+    this_thread::sleep_for(chrono::milliseconds(10000));
     LOG << "End World" << endl;
     return 0;
 }

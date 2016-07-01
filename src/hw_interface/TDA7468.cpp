@@ -66,6 +66,8 @@
 //   sel V1_1db, V1_8db and V2_8db to 0
 //   set V_in_gain = Target_V / 2
 
+#define SLEEP_MSEC 50
+
 TDA7468::TDA7468(uint8_t addr, int channel) 
     : I2C_Device(addr, channel), 
     volume_(0xffff), input_gain_(0xffff), bass_(0xffff), treble_(0xffff), 
@@ -73,7 +75,7 @@ TDA7468::TDA7468(uint8_t addr, int channel)
 {
     LOG << "start init TDA 7468" << std::endl;
     init_I2C();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     //write_byte(POWER_ON_RESET);
     //std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     
@@ -89,15 +91,15 @@ TDA7468::TDA7468(uint8_t addr, int channel)
     
     //DAC is input 1
     input(1);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
     //meaning 0 attenuation
     volume(0);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
     //un-mute output
     mute_output(false);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
     
     //write_byte(POWER_ON_RESET);
@@ -121,9 +123,9 @@ void TDA7468::volume(int v){
     }else if (v > 14){
         v = 14;
     }
-    if (volume_ == v){
+    /*if (volume_ == v){
         return;
-    }
+    }*/
     
     volume_ = v;
     uint8_t v1_1db, v1_8db, v2_8db, input_gain;
@@ -138,23 +140,18 @@ void TDA7468::volume(int v){
         v2_8db = 0;
         input_gain = volume_ / 2;
     }
-    uint8_t buff[2];
-    int buff_len = 2;
+    
     //chip addr has been set with ioctl(...)
     
     //TODO consider balance
     
-    buff[0] = SUB_ADDR_VOLUME_LEFT;
-    buff[1] = 0;
-    buff[1] = (v2_8db << 6) | (v1_8db << 3) | v1_1db;
-    write_byte_data(buff[0], buff[1]);
+    uint8_t data = 0;
+    data = (v2_8db << 6) | (v1_8db << 3) | v1_1db;
+    write_byte_data(SUB_ADDR_VOLUME_LEFT, data);
     
-    buff[0] = SUB_ADDR_VOLUME_RIGHT;
-    write_byte_data(buff[0], buff[1]);
+    write_byte_data(SUB_ADDR_VOLUME_RIGHT, data);
     
-    buff[0] = SUB_ADDR_INPUT_GAIN;
-    buff[1] = input_gain;
-    write_byte_data(buff[0], buff[1]);
+    write_byte_data(SUB_ADDR_INPUT_GAIN, input_gain);
 }
 
 
@@ -174,12 +171,8 @@ void TDA7468::bass(int b){
     
     bass_ = b;
     
-    uint8_t buff[2];
-    int buff_len = 2;
-    
-    buff[0] = SUB_ADDR_TREBLE_BASS;
-    buff[1] = encode_bass_treble(bass_, treble_);
-    write_byte_data(buff[0], buff[1]);
+    uint8_t data = encode_bass_treble(bass_, treble_);
+    write_byte_data(SUB_ADDR_TREBLE_BASS, data);
 }
 
 
@@ -199,12 +192,8 @@ void TDA7468::treble(int t){
     
     treble_ = t;
     
-    uint8_t buff[2];
-    int buff_len = 2;
-    
-    buff[0] = SUB_ADDR_TREBLE_BASS;
-    buff[1] = encode_bass_treble(bass_, treble_);
-    write_byte_data(buff[0], buff[1]);
+    uint8_t data = encode_bass_treble(bass_, treble_);
+    write_byte_data(SUB_ADDR_TREBLE_BASS, data);
 }
 
 
@@ -213,17 +202,14 @@ bool TDA7468::mute_output(){
 }
 
 void TDA7468::mute_output(bool m){
-    uint8_t buff[2];
-    int buff_len = 2;
-    
     mute_ = m;
-    buff[0] = SUB_ADDR_OUTPUT;
+    uint8_t data = 0;
     if (mute_){
-        buff[1] = OUTPUT_MUTE_ON;
+        data = OUTPUT_MUTE_ON;
     }else{
-        buff[1] = OUTPUT_MUTE_OFF;
+        data = OUTPUT_MUTE_OFF;
     }
-    write_byte_data(buff[0], buff[1]);
+    write_byte_data(SUB_ADDR_OUTPUT, data);
 }
 
 int TDA7468::input(){
@@ -242,13 +228,9 @@ void TDA7468::input(int n){
     }*/
     
     input_ = n;
-    
-    uint8_t buff[2];
-    int buff_len = 2;
-    
-    buff[0] = SUB_ADDR_INPUT_SELECT_MIC;
-    buff[1] = (n - 1) | INPUT_MIC_OFF;
-    write_byte_data(buff[0], buff[1]);
+
+    uint8_t data = (n - 1) | INPUT_MIC_OFF;
+    write_byte_data(SUB_ADDR_INPUT_SELECT_MIC, data);
 }
 
 

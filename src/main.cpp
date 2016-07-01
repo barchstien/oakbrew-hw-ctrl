@@ -43,21 +43,29 @@ int main(int argc, char *argv[]){
     //sound_ctrl.input(1);
     //this_thread::sleep_for(chrono::milliseconds(500));
     
-    
-    
-    uint32_t v = 0;
-    int i = 1;
-    while (false){
-        
-        TDA7468 sound_ctrl;
-        
-        this_thread::sleep_for(chrono::milliseconds(2000));
-        
-        TDA7468 sound_ctrl2;
-        this_thread::sleep_for(chrono::milliseconds(2000));
-        
-        LOG << "---------------------------" << std::endl;
+#if 0
+    for (int i=-87; i<15; i++){
+        sound_ctrl.volume(i);
+        this_thread::sleep_for(chrono::milliseconds(1000));
     }
+#endif
+
+    int v = -87;
+    sound_ctrl.volume(v);
+    while (true){
+        std::cout << "volume : " << std::endl;
+        std::cin >> v;
+        if(cin.fail())
+        {
+            // user didn't input a number
+            cin.clear(); // reset failbit
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //skip bad input
+            // next, request user reinput
+        }else{
+            sound_ctrl.volume(v);
+        }
+    }
+
 #if 0
     ///
     RPi_GPIO::exportPin(GPIO_UNMUTE);

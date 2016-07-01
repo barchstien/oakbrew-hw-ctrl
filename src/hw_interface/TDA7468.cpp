@@ -84,11 +84,11 @@ TDA7468::TDA7468(uint8_t addr, int channel)
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
     //meaning 0 attenuation and 0 input gain
-    volume(0);
+    volume(-40);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
     //disable suround
-    /write_byte_data(SUB_ADDR_SURROUND, 0b00011000);
+    write_byte_data(SUB_ADDR_SURROUND, 0b00011000);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     
     //trebel & bass to mid point for test
@@ -124,16 +124,19 @@ void TDA7468::volume(int v){
     }else if (v > 14){
         v = 14;
     }
-    /*if (volume_ == v){
-        return;
-    }*/
+    LOG << "Setting volume to " << v << std::endl;
     
     volume_ = v;
     uint8_t v1_1db, v1_8db, v2_8db, input_gain;
     if (volume_ < 0){
-        v1_1db = volume_ % 8;
-        v1_8db = (volume_ / 8) % 8;
-        v2_8db = volume_ / 8 - v1_8db;
+        int v_abs = -1 * volume_;
+        v1_1db = v_abs % 8;
+        v1_8db = ((v_abs - v1_1db) / 8);
+        if (v1_8db > 7){
+            v1_8db = 7;
+        }
+        v2_8db = ((v_abs - v1_1db) / 8) - v1_8db;
+        LOG << "v1_1db : "<<(int)v1_1db <<"   v1_8db : "<<(int)v1_8db <<"   v2_8db : "<<(int)v2_8db << std::endl;
         input_gain = 0;
     }else{
         v1_1db = 0;

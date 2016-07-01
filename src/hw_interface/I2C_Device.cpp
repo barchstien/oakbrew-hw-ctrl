@@ -85,7 +85,7 @@ int I2C_Device::write_byte(uint8_t cmd){
         int err = errno;
         LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : " << strerror(err) << std::endl;
     }
-    LOG << "ret : " << ret << std::endl;
+    //LOG << "ret : " << ret << std::endl;
 
     return ret;
 }

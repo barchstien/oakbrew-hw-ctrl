@@ -27,11 +27,11 @@
 //using namespace std;
 
 #define PCM512X_SPI_CHAN 0
+#define ADC_THRESHOLD 50
 
 
 int main(int argc, char *argv[]){
     LOG << "-------------------------\nStarting oakbrew-hw-control " << std::endl;
-    
     
     
     libconfig::Config cfg;
@@ -53,9 +53,37 @@ int main(int argc, char *argv[]){
         return(EXIT_FAILURE);
     }
     
-    return 0;
+    libconfig::Setting &root = cfg.getRoot();
+    if(! root.exists("adc")){
+        LOG << "Cannot find adc in config file" << std::endl;
+        exit(51);
+    }
+
+    Config config;
+    libconfig::Setting &mcp3008_config = root["adc"];
+    mcp3008_config.lookupValue("spi-channel", config.spi_channel);
+    mcp3008_config.lookupValue("volume-channel", config.volume_channel);
+    mcp3008_config.lookupValue("balance-channel", config.balance_channel);
+    mcp3008_config.lookupValue("bass-channel", config.bass_channel);
+    mcp3008_config.lookupValue("treble-channel", config.treble_channel);
         
-    MCP3008 adc(0);
+    MCP3008 adc(config.spi_channel);
+    int volume = 0, balance = 0, bass = 0, treble = 0;
+    int tmp;
+    
+    while (true){
+        tmp = adc.get_value(config.volume_channel);
+        //TODO be more tolerant with small variations
+        if (tmp > (volume + ADC_THRESHOLD) || tmp < (volume - ADC_THRESHOLD)){
+            LOG << "Volume : " << volume << " tmp : " << tmp << std::endl;
+            volume = tmp;
+        }
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    
+    return 0;
+    
     TDA7468 sound_ctrl;
     
     //this_thread::sleep_for(chrono::milliseconds(500));

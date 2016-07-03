@@ -22,47 +22,6 @@ MCP3008::MCP3008(int channel)
 {
     LOG << "init MCP 3008..." << endl;
     init_SPI();
-    //char buff[2];
-    
-#if 0
-    //reset
-    register_write(PCM512x_RESET, 0b00010001);
-    
-    //request standby
-    register_write(PCM512x_POWER, 0b00010000);
-    this_thread::sleep_for(chrono::milliseconds(1000));
-    
-    //reg 13, set PLL source to BCK (1), default SCK (0)
-    register_write(PCM512X_PLL_SOURCE, 0b00010000);
-        
-    //P, keep default 0000: P=1
-    register_write(PCM512X_PLL_P, 0b00010000);    
-    
-    //J 100000: J=32
-    register_write(PCM512X_PLL_J, 0b100000);
-    
-    //D, keep default 0000: D=0
-    register_write(PCM512X_PLL_D, 0b00010000);
-        
-    //R 0001: R=2
-    register_write(PCM512X_PLL_R, 0b0001);
-    
-    ////values from pcm512x datasheet - page 28 - 44,1kHz RSCK:32
-    //DDSP 2
-    register_write(PCM512X_PLL_DDSP, 0b0000001);
-    
-    //DDAC 16 : 
-    register_write(PCM512X_PLL_DDAC, 0b0001111);
-    
-    //DNCP 4
-    register_write(PCM512X_PLL_DNCP, 0b0000011);
-    
-    //DOSR 8
-    register_write(PCM512X_PLL_DOSR, 0b0000111);
-    
-    //i2s format and word length (16bit) 0b00000000
-    register_write(PCM512X_I2S_FORMAT_LENGTH, 0b00000000);
-#endif
     LOG << "MCP 3008 finish init" << endl;
 }
 

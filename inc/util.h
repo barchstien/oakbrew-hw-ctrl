@@ -78,4 +78,16 @@ template <class T> T ThreadSafeQ<T>::deque(){
     return m;
 }
 
+
+struct Config{
+    unsigned int spi_channel;
+    unsigned int volume_channel;
+    unsigned int balance_channel;
+    unsigned int bass_channel;
+    unsigned int treble_channel;
+
+};
+
+
+
 #endif

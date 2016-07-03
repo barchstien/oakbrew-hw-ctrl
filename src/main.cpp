@@ -20,14 +20,40 @@
 /** pin map */
 #define GPIO_UNMUTE 26
 
-
-using namespace std;
+#include <libconfig.h++>
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+//using namespace std;
 
 #define PCM512X_SPI_CHAN 0
 
 
 int main(int argc, char *argv[]){
-    LOG << "-------------------------\nStarting oakbrew-hw-control " << endl;
+    LOG << "-------------------------\nStarting oakbrew-hw-control " << std::endl;
+    
+    
+    
+    libconfig::Config cfg;
+
+    // Read the file. If there is an error, report it and exit.
+    try
+    {
+        cfg.readFile("../oakbrew-hw-ctrl/config.cfg");
+    }
+    catch(const libconfig::FileIOException &fioex)
+    {
+        std::cerr << "I/O error while reading file." << std::endl;
+        return(EXIT_FAILURE);
+    }
+    catch(const libconfig::ParseException &pex)
+    {
+        std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
+        << " - " << pex.getError() << std::endl;
+        return(EXIT_FAILURE);
+    }
+    
+    return 0;
         
     MCP3008 adc(0);
     TDA7468 sound_ctrl;
@@ -55,11 +81,11 @@ int main(int argc, char *argv[]){
     while (true){
         std::cout << "volume : " << std::endl;
         std::cin >> v;
-        if(cin.fail())
+        if(std::cin.fail())
         {
             // user didn't input a number
-            cin.clear(); // reset failbit
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //skip bad input
+            std::cin.clear(); // reset failbit
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //skip bad input
             // next, request user reinput
         }else{
             sound_ctrl.volume(v);
@@ -96,8 +122,8 @@ int main(int argc, char *argv[]){
     }
 #endif
     
-    this_thread::sleep_for(chrono::milliseconds(10000));
-    LOG << "End World" << endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+    LOG << "End World" << std::endl;
     return 0;
 }
 

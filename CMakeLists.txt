@@ -36,5 +36,5 @@ add_executable(oakbrew-hw-control
 # if no link to pthread, runtime error when starting thread
 find_package(Threads REQUIRED)
 #TARGET_LINK_LIBRARIES(oakbrew-hw-control ${CMAKE_THREAD_LIBS_INIT} i2c)
-TARGET_LINK_LIBRARIES(oakbrew-hw-control ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(oakbrew-hw-control ${CMAKE_THREAD_LIBS_INIT} config++)
 

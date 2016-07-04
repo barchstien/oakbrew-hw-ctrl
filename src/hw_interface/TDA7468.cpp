@@ -5,6 +5,9 @@
 #include <thread>
 #include <chrono>
 
+//debug
+#include <bitset>
+
 //not sure how it is used
 #define POWER_ON_RESET  0b11111110
 
@@ -66,7 +69,7 @@
 //   sel V1_1db, V1_8db and V2_8db to 0
 //   set V_in_gain = Target_V / 2
 
-#define SLEEP_MSEC 50
+#define SLEEP_MSEC 5
 
 TDA7468::TDA7468(uint8_t addr, int channel)
     : I2C_Device(addr, channel),
@@ -83,8 +86,8 @@ TDA7468::TDA7468(uint8_t addr, int channel)
     input(1);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
 
-    //meaning 0 attenuation and 0 input gain
-    volume(-40);
+    //volume to lowest
+    volume(-87);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
 
     //disable suround
@@ -174,8 +177,14 @@ void TDA7468::bass(int b){
     }
 
     bass_ = b;
+    LOG << "setting bass to : " << bass_ << std::endl;
 
     uint8_t data = encode_bass_treble(bass_, treble_);
+
+    //debug
+    std::bitset<8> x(data);
+    LOG << "to chip : " << x << std::endl;
+
     write_byte_data(SUB_ADDR_TREBLE_BASS, data);
 }
 
@@ -195,8 +204,14 @@ void TDA7468::treble(int t){
     }
 
     treble_ = t;
+    LOG << "setting treble to : " << treble_ << std::endl;
 
     uint8_t data = encode_bass_treble(bass_, treble_);
+
+    //debug
+    std::bitset<8> x(data);
+    std::cout << "to chip : " << x << std::endl;
+
     write_byte_data(SUB_ADDR_TREBLE_BASS, data);
 }
 
@@ -249,13 +264,21 @@ void TDA7468::balance(int b){
 
 
 uint8_t TDA7468::encode_bass_treble(int bass, int treble){
-    uint8_t tmp_b = abs(abs(bass) / 2 - 7);
-    if (tmp_b > 0){
+    uint8_t tmp_b;
+    //uint8_t tmp_b = 0;
+    if (bass <= 0){
+        tmp_b = bass / 2 + 7;
+    }else{
+        tmp_b = 7 - (bass / 2);
         tmp_b = tmp_b | 0b1000;
     }
 
-    uint8_t tmp_t = abs(abs(treble) / 2 - 7);
-    if (tmp_t > 0){
+    uint8_t tmp_t;
+    //uint8_t tmp_b = 0;
+    if (treble <= 0){
+        tmp_t = treble / 2 + 7;
+    }else{
+        tmp_t = 7 - (treble / 2);
         tmp_t = tmp_t | 0b1000;
     }
 

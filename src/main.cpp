@@ -93,7 +93,7 @@ int main(int argc, char *argv[]){
             volume = tmp;
 
             //TODO debug
-            int v = volume * 87 / 1024 -87;
+            int v = volume * 87 / MCP3008::MAX_VALUE -87;
             LOG << "volume : " << volume << "  set db : " << v << std::endl;
             sound_ctrl.volume(v);
         }
@@ -109,7 +109,13 @@ int main(int argc, char *argv[]){
         tmp = adc.get_value(config.bass_channel);
         if (tmp > (bass + ADC_THRESHOLD) || tmp < (bass - ADC_THRESHOLD)){
             bass = tmp;
-            LOG << "bass : " << bass << std::endl;
+
+            //TODO debug
+            //map to [0; 14]
+            //value is rounded @ 2db by sound_ctrl
+            int b = (bass * 15 / MCP3008::MAX_VALUE -7) * 2;
+            LOG << "bass : " << bass << "  set db : " << b << std::endl;
+            sound_ctrl.bass(b);
         }
 
         //treble

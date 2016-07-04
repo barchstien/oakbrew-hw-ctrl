@@ -15,5 +15,6 @@ public:
     /** poll MCP 3008 for channel */
     uint16_t get_value(unsigned int channel);
     
+    static const unsigned int MAX_VALUE = 1023;
 };
 #endif

@@ -10,7 +10,7 @@
 using namespace std;
 
 #define MCP3008_SPI_CPOL_CPHA 0b00
-#define MCP3008_SPI_SPEED 100000
+#define MCP3008_SPI_SPEED 5000000
 #define MCP3008_SPI_DELAY 0
 #define MCP3008_SPI_WL 0
 
@@ -31,10 +31,11 @@ MCP3008::~MCP3008(){
 }
 
 uint16_t MCP3008::get_value(unsigned int channel){
-    uint8_t tmp = channel & 0x111;
+    uint8_t tmp = channel & 0b00000111;
     tmp = tmp << 4;
     tmp = 0b10000000 | tmp;
-    char cmd[3]     = {0b00000001, tmp, 0};
+    
+    char cmd[3] = {0b00000001, tmp, 0};
 
 #if 0
     for (int i=0; i<3; i++){

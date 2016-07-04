@@ -26,9 +26,8 @@
 #include <cstdlib>
 //using namespace std;
 
-#define PCM512X_SPI_CHAN 0
-#define ADC_THRESHOLD 50
-
+#define ADC_THRESHOLD 5
+#define ADC_DELAY_BETWEEN_READ 50
 
 int main(int argc, char *argv[]){
     LOG << "-------------------------\nStarting oakbrew-hw-control " << std::endl;
@@ -78,14 +77,40 @@ int main(int argc, char *argv[]){
     int tmp;
     
     while (true){
-        tmp = adc.get_value(config.volume_channel);
-        //TODO be more tolerant with small variations
-        //if (tmp > (volume + ADC_THRESHOLD) || tmp < (volume - ADC_THRESHOLD)){
-            LOG << "Volume : " << volume << " tmp : " << tmp << std::endl;
-            volume = tmp;
-        //}
+        //balance
+        tmp = adc.get_value(config.balance_channel);
+        if (tmp > (balance + ADC_THRESHOLD) || tmp < (balance - ADC_THRESHOLD)){
+            balance = tmp;
+            LOG << "balance : " << balance << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(ADC_DELAY_BETWEEN_READ));
         
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        //volume
+        tmp = adc.get_value(config.volume_channel);
+        if (tmp > (volume + ADC_THRESHOLD) || tmp < (volume - ADC_THRESHOLD)){
+            volume = tmp;
+            LOG << "volume : " << volume << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(ADC_DELAY_BETWEEN_READ));
+        
+        
+        //bass
+        tmp = adc.get_value(config.bass_channel);
+        if (tmp > (bass + ADC_THRESHOLD) || tmp < (bass - ADC_THRESHOLD)){
+            bass = tmp;
+            LOG << "bass : " << bass << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(ADC_DELAY_BETWEEN_READ));
+        
+        //treble
+        tmp = adc.get_value(config.treble_channel);
+        if (tmp > (treble + ADC_THRESHOLD) || tmp < (treble - ADC_THRESHOLD)){
+            treble = tmp;
+            LOG << "treble : " << treble << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(ADC_DELAY_BETWEEN_READ));
+        
+        //std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
     return 0;

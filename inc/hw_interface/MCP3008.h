@@ -4,12 +4,7 @@
 #include <string>
 #include "hw_interface/SPI_Device.h"
 
-#include "module.h"
-
-/**
-SPI control of MCP3008, that has 8 channels ADC
-*/
-
+/** SPI control of MCP3008, that has 8 channels ADC */
 class MCP3008 : public SPI_Device {
 public:
     /** Constructor

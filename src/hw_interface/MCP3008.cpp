@@ -1,6 +1,7 @@
 
 
 #include "hw_interface/MCP3008.h"
+#include "util.h"
 #include <cstring>
 #include <arpa/inet.h>
 
@@ -20,9 +21,9 @@ MCP3008::MCP3008(int channel)
                 MCP3008_SPI_DELAY, 
                 MCP3008_SPI_WL)
 {
-    LOG << "init MCP 3008..." << endl;
+    LOG << "init MCP 3008..." << std::endl;
     init_SPI();
-    LOG << "MCP 3008 finish init" << endl;
+    LOG << "MCP 3008 finish init" << std::endl;
 }
 
 MCP3008::~MCP3008(){
@@ -34,7 +35,7 @@ uint16_t MCP3008::get_value(unsigned int channel){
     tmp = tmp << 4;
     tmp = 0b10000000 | tmp;
     char cmd[3]     = {0b00000001, tmp, 0};
-    //char rx_buff[3] = {0, 0, 0};
+
 #if 0
     for (int i=0; i<3; i++){
         std::bitset<8> x(cmd[i]);

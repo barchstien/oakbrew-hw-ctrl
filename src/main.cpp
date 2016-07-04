@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
     
     MCP3008 adc(config.spi_channel);
     int volume = 0, balance = 0, bass = 0, treble = 0;
-    int tmp;
+    int tmp = -1;
     
     while (true){
         //balance

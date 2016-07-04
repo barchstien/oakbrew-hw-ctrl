@@ -10,7 +10,8 @@
 using namespace std;
 
 #define MCP3008_SPI_CPOL_CPHA 0b00
-#define MCP3008_SPI_SPEED 5000000
+//datasheet p14, Figure 4.2, Max clock freq to maintain less than 0.1 LS deviation
+#define MCP3008_SPI_SPEED 500000
 #define MCP3008_SPI_DELAY 0
 #define MCP3008_SPI_WL 0
 

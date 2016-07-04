@@ -7,20 +7,20 @@ module::~module(){
 
 void module::start(){
     LOG << "module::start()" << std::endl;
-    if (!m_shouldRun){
-        m_shouldRun = true;
-        m_module_thread = std::thread(&module::threadHandler, this);
+    if (!shouldRun_){
+        shouldRun_ = true;
+        module_thread_ = std::thread(&module::threadHandler, this);
     }
 }
 
 void module::stop(){
-    if (m_shouldRun){
-        m_shouldRun = false;
-        if (m_module_thread.joinable())
-            m_module_thread.join();
+    if (shouldRun_){
+        shouldRun_ = false;
+        if (module_thread_.joinable())
+            module_thread_.join();
     }
 }
 
 int module::enqueMessage(std::shared_ptr<Message> m){
-    m_q.enque(m);
+    q_.enque(m);
 }

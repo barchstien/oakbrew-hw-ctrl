@@ -21,7 +21,7 @@ int LedControl::threadHandler(){
     bool is_on = false;
     RPi_GPIO::write(m_gpio_pin, 0);
     
-    while(m_shouldRun){
+    while(shouldRun_){
         if (m_enable_blink){
             //blink mode
         

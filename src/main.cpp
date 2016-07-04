@@ -27,12 +27,11 @@
 //using namespace std;
 
 #define ADC_THRESHOLD 5
-#define ADC_DELAY_BETWEEN_READ 50
 
 int main(int argc, char *argv[]){
     LOG << "-------------------------\nStarting oakbrew-hw-control " << std::endl;
-    
-    
+
+
     libconfig::Config cfg;
 
     // Read the file. If there is an error, report it and exit.
@@ -51,7 +50,7 @@ int main(int argc, char *argv[]){
         << " - " << pex.getError() << std::endl;
         return(EXIT_FAILURE);
     }
-    
+
     libconfig::Setting &root = cfg.getRoot();
     if(! root.exists("adc")){
         LOG << "Cannot find adc in config file" << std::endl;
@@ -65,58 +64,69 @@ int main(int argc, char *argv[]){
     mcp3008_config.lookupValue("balance-channel", config.balance_channel);
     mcp3008_config.lookupValue("bass-channel", config.bass_channel);
     mcp3008_config.lookupValue("treble-channel", config.treble_channel);
-    
+
     LOG << "spi-channel : " << config.spi_channel << std::endl;
     LOG << "volume-channel : " << config.volume_channel << std::endl;
     LOG << "balance-channel : " << config.balance_channel << std::endl;
     LOG << "bass-channel : " << config.bass_channel << std::endl;
     LOG << "treble-channel : " << config.treble_channel << std::endl;
-    
+
+    TDA7468 sound_ctrl;
+
     MCP3008 adc(config.spi_channel);
+    adc.enable_channel(config.volume_channel);
+    adc.enable_channel(config.balance_channel);
+    adc.enable_channel(config.treble_channel);
+    adc.enable_channel(config.bass_channel);
+    adc.start();
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
     int volume = 0, balance = 0, bass = 0, treble = 0;
     int tmp = -1;
-    
+
+    LOG << "main loop ..." << std::endl;
+
     while (true){
+        //volume
+        tmp = adc.get_value(config.volume_channel);
+        if (tmp > (volume + ADC_THRESHOLD) || tmp < (volume - ADC_THRESHOLD)){
+            volume = tmp;
+
+            //TODO debug
+            int v = volume * 87 / 1024 -87;
+            LOG << "volume : " << volume << "  set db : " << v << std::endl;
+            sound_ctrl.volume(v);
+        }
+
         //balance
         tmp = adc.get_value(config.balance_channel);
         if (tmp > (balance + ADC_THRESHOLD) || tmp < (balance - ADC_THRESHOLD)){
             balance = tmp;
             LOG << "balance : " << balance << std::endl;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(ADC_DELAY_BETWEEN_READ));
-        
-        //volume
-        tmp = adc.get_value(config.volume_channel);
-        if (tmp > (volume + ADC_THRESHOLD) || tmp < (volume - ADC_THRESHOLD)){
-            volume = tmp;
-            LOG << "volume : " << volume << std::endl;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(ADC_DELAY_BETWEEN_READ));
-        
-        
+
         //bass
         tmp = adc.get_value(config.bass_channel);
         if (tmp > (bass + ADC_THRESHOLD) || tmp < (bass - ADC_THRESHOLD)){
             bass = tmp;
             LOG << "bass : " << bass << std::endl;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(ADC_DELAY_BETWEEN_READ));
-        
+
         //treble
         tmp = adc.get_value(config.treble_channel);
         if (tmp > (treble + ADC_THRESHOLD) || tmp < (treble - ADC_THRESHOLD)){
             treble = tmp;
             LOG << "treble : " << treble << std::endl;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(ADC_DELAY_BETWEEN_READ));
-        
-        //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        //LOG << "blop" << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    
+
     return 0;
-    
-    TDA7468 sound_ctrl;
-    
+
+
+
     //this_thread::sleep_for(chrono::milliseconds(500));
     //sound_ctrl.mute(false);
     //this_thread::sleep_for(chrono::milliseconds(500));
@@ -127,7 +137,7 @@ int main(int argc, char *argv[]){
     //DAC is input 1
     //sound_ctrl.input(1);
     //this_thread::sleep_for(chrono::milliseconds(500));
-    
+
 #if 0
     for (int i=-87; i<15; i++){
         sound_ctrl.volume(i);
@@ -155,13 +165,13 @@ int main(int argc, char *argv[]){
     ///
     RPi_GPIO::exportPin(GPIO_UNMUTE);
     RPi_GPIO::setOutput(GPIO_UNMUTE);
-    
-    
+
+
     this_thread::sleep_for(chrono::milliseconds(1000));
     shared_ptr<PCM512x_spi> pcm512x_spi_ptr;
     pcm512x_spi_ptr = shared_ptr<PCM512x_spi>(new PCM512x_spi(PCM512X_SPI_CHAN));
     this_thread::sleep_for(chrono::milliseconds(1000));
-    
+
     //unmute
     LOG << "unmuting DAC" << endl;
     RPi_GPIO::write(GPIO_UNMUTE, 0);
@@ -180,12 +190,8 @@ int main(int argc, char *argv[]){
         //this_thread::sleep_for(chrono::milliseconds(2000));
     }
 #endif
-    
+
     std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     LOG << "End World" << std::endl;
     return 0;
 }
-
-
-
-

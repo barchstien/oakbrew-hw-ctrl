@@ -66,7 +66,13 @@ int main(int argc, char *argv[]){
     mcp3008_config.lookupValue("balance-channel", config.balance_channel);
     mcp3008_config.lookupValue("bass-channel", config.bass_channel);
     mcp3008_config.lookupValue("treble-channel", config.treble_channel);
-        
+    
+    LOG << "spi-channel : " << config.spi_channel << std::endl;
+    LOG << "volume-channel : " << config.volume_channel << std::endl;
+    LOG << "balance-channel : " << config.balance_channel << std::endl;
+    LOG << "bass-channel : " << config.bass_channel << std::endl;
+    LOG << "treble-channel : " << config.treble_channel << std::endl;
+    
     MCP3008 adc(config.spi_channel);
     int volume = 0, balance = 0, bass = 0, treble = 0;
     int tmp;
@@ -74,12 +80,12 @@ int main(int argc, char *argv[]){
     while (true){
         tmp = adc.get_value(config.volume_channel);
         //TODO be more tolerant with small variations
-        if (tmp > (volume + ADC_THRESHOLD) || tmp < (volume - ADC_THRESHOLD)){
+        //if (tmp > (volume + ADC_THRESHOLD) || tmp < (volume - ADC_THRESHOLD)){
             LOG << "Volume : " << volume << " tmp : " << tmp << std::endl;
             volume = tmp;
-        }
+        //}
         
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     
     return 0;

@@ -68,7 +68,7 @@ int SPI_Device::close_SPI(){
 //#include <bitset>
 //#include <netinet/in.h>
 
-char* SPI_Device::send_buff(char* tx_buff, int tx_buff_len){
+void SPI_Device::send_buff(char* tx_buff, char* rx_buff, int buff_len){
     struct spi_ioc_transfer spi ;
     
     //debug
@@ -79,11 +79,11 @@ char* SPI_Device::send_buff(char* tx_buff, int tx_buff_len){
     LOG << reg << " - W=0? " << r_w << " -cmd: " << cmd << " -data: " << data << endl;
     */
     
-    char* rx_buff = (char*)malloc(tx_buff_len);
+    //char* rx_buff = (char*)malloc(tx_buff_len);
     
     spi.tx_buf        = (__u64)tx_buff;
     spi.rx_buf        = (__u64)rx_buff;
-    spi.len           = tx_buff_len;
+    spi.len           = buff_len;
     spi.delay_usecs   = 0;//delay_usec_;
     spi.speed_hz      = 0;//speed_;
     spi.bits_per_word = 0;//word_length_;
@@ -91,5 +91,5 @@ char* SPI_Device::send_buff(char* tx_buff, int tx_buff_len){
 
     ioctl (fd, SPI_IOC_MESSAGE(1), &spi);
     
-    return rx_buff;
+    //return rx_buff;
 }

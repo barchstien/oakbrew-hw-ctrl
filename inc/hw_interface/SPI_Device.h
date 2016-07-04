@@ -23,8 +23,8 @@ protected:
     /** close the SPI communication by closing the file descriptor on /dev/spidevA.B */
     int close_SPI();
     
-    //void send_spi_word(char c, char d);
-    char* send_buff(char* buff, int buff_len);
+    /** send and receive buff_len bytes (SPI style) */
+    void send_buff(char* tx_buff, char* rx_buff, int buff_len);
     
     int channel_;
     /** clock polarity & phase CPOL CPHA 

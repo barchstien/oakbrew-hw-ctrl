@@ -9,7 +9,7 @@
 using namespace std;
 
 #define MCP3008_SPI_CPOL_CPHA 0b00
-#define MCP3008_SPI_SPEED 10000000
+#define MCP3008_SPI_SPEED 100000
 #define MCP3008_SPI_DELAY 0
 #define MCP3008_SPI_WL 0
 
@@ -41,8 +41,8 @@ uint16_t MCP3008::get_value(unsigned int channel){
         std::cout << "cmd[" << i << "] : " << x << std::endl;
     }
 #endif
-    char* rx_buff = 0;
-    rx_buff = send_buff(cmd, 3);
+    char rx_buff[3];
+    send_buff(cmd, rx_buff, 3);
 #if 0
     for (int i=0; i<3; i++){
         std::bitset<8> x(rx_buff[i]);

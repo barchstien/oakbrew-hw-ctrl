@@ -51,12 +51,12 @@
 
 // Conclusion :
 // Scale volume from -87db to (0db) +14db, total (88) 102 steps. !! last 1 steps by 2db
-// volume = 8 * V2_8db + 8 * V1_8db + V1_1db + 
+// volume = 8 * V2_8db + 8 * V1_8db + V1_1db +
 // from ADC, get targeted volume, that uses 1024 steps
 // divide ADC by div = (1024 / num_steps). Avoid "edge" values leading to lots of volume change like this :
 // |--> keep current_val, which is ((old_read + div/2) % div)
 // |--> Only change volume when ((new_read + div/2) % div) changes from current_val
-// 
+//
 // Considering Target_V as absolute value [0; 87]
 // V1_1db = Target_V % 8
 // V1_8db = (Target_V / 8) % 8
@@ -68,9 +68,9 @@
 
 #define SLEEP_MSEC 50
 
-TDA7468::TDA7468(uint8_t addr, int channel) 
-    : I2C_Device(addr, channel), 
-    volume_(0xffff), input_gain_(0xffff), bass_(0xffff), treble_(0xffff), 
+TDA7468::TDA7468(uint8_t addr, int channel)
+    : I2C_Device(addr, channel),
+    volume_(0xffff), input_gain_(0xffff), bass_(0xffff), treble_(0xffff),
     mute_(false), input_(0xffff), balance_(0xffff)
 {
     LOG << "start init TDA 7468" << std::endl;
@@ -78,34 +78,34 @@ TDA7468::TDA7468(uint8_t addr, int channel)
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
     //write_byte(POWER_ON_RESET);
     //std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-    
+
     //DAC is input 1
     input(1);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
-    
+
     //meaning 0 attenuation and 0 input gain
     volume(-40);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
-    
+
     //disable suround
     write_byte_data(SUB_ADDR_SURROUND, 0b00011000);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
-    
+
     //trebel & bass to mid point for test
     write_byte_data(SUB_ADDR_TREBLE_BASS, 0b11111111);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
-    
+
     //un-mute output
     mute_output(false);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
-    
+
     //turn off bass ALC
     write_byte_data(SUB_ADDR_BASS_ALC, 0b00000000);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
-    
+
     //write_byte(POWER_ON_RESET);
     //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    
+
     LOG << "end init TDA 7468" << std::endl;
 }
 
@@ -124,8 +124,8 @@ void TDA7468::volume(int v){
     }else if (v > 14){
         v = 14;
     }
-    LOG << "Setting volume to " << v << std::endl;
-    
+    //LOG << "Setting volume to " << v << std::endl;
+
     volume_ = v;
     uint8_t v1_1db, v1_8db, v2_8db, input_gain;
     if (volume_ < 0){
@@ -136,7 +136,7 @@ void TDA7468::volume(int v){
             v1_8db = 7;
         }
         v2_8db = ((v_abs - v1_1db) / 8) - v1_8db;
-        LOG << "v1_1db : "<<(int)v1_1db <<"   v1_8db : "<<(int)v1_8db <<"   v2_8db : "<<(int)v2_8db << std::endl;
+        //LOG << "v1_1db : "<<(int)v1_1db <<"   v1_8db : "<<(int)v1_8db <<"   v2_8db : "<<(int)v2_8db << std::endl;
         input_gain = 0;
     }else{
         v1_1db = 0;
@@ -144,17 +144,17 @@ void TDA7468::volume(int v){
         v2_8db = 0;
         input_gain = volume_ / 2;
     }
-    
+
     //chip addr has been set with ioctl(...)
-    
+
     //TODO consider balance
-    
+
     uint8_t data = 0;
     data = (v2_8db << 6) | (v1_8db << 3) | v1_1db;
     write_byte_data(SUB_ADDR_VOLUME_LEFT, data);
-    
+
     write_byte_data(SUB_ADDR_VOLUME_RIGHT, data);
-    
+
     write_byte_data(SUB_ADDR_INPUT_GAIN, input_gain);
 }
 
@@ -172,9 +172,9 @@ void TDA7468::bass(int b){
     if (bass_ == b){
         return;
     }
-    
+
     bass_ = b;
-    
+
     uint8_t data = encode_bass_treble(bass_, treble_);
     write_byte_data(SUB_ADDR_TREBLE_BASS, data);
 }
@@ -193,9 +193,9 @@ void TDA7468::treble(int t){
     if (treble_ == t){
         return;
     }
-    
+
     treble_ = t;
-    
+
     uint8_t data = encode_bass_treble(bass_, treble_);
     write_byte_data(SUB_ADDR_TREBLE_BASS, data);
 }
@@ -230,7 +230,7 @@ void TDA7468::input(int n){
     /*if (input_ == n){
         return;
     }*/
-    
+
     input_ = n;
 
     uint8_t data = (n - 1) | INPUT_MIC_OFF;
@@ -253,12 +253,11 @@ uint8_t TDA7468::encode_bass_treble(int bass, int treble){
     if (tmp_b > 0){
         tmp_b = tmp_b | 0b1000;
     }
-    
+
     uint8_t tmp_t = abs(abs(treble) / 2 - 7);
     if (tmp_t > 0){
         tmp_t = tmp_t | 0b1000;
     }
-    
+
     return ((tmp_b << 4) | tmp_t);
 }
-

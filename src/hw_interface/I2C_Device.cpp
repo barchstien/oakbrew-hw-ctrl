@@ -31,7 +31,7 @@ int I2C_Device::init_I2C(){
     }else{
         LOG << "Error, channel_ = " << channel_ << " valid values are 0 and 1" << std::endl;
     }
-    
+
     //assume that I2C module has been loaded (modprobe ...)
     //check that I2C fd are created
     std::stringstream ss;
@@ -67,8 +67,7 @@ int I2C_Device::write_byte(uint8_t cmd){
 
     //debug
     std::bitset<8> c(cmd);
-    LOG << "writing to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << ") : " << 
-    c << std::dec << std::endl;
+    //LOG << "writing to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << ") : " <<  c << std::dec << std::endl;
 
     int ret = 0;
     struct i2c_smbus_ioctl_data args;
@@ -78,9 +77,9 @@ int I2C_Device::write_byte(uint8_t cmd){
     args.command = cmd;
     args.size = I2C_SMBUS_BYTE;
     args.data = nullptr;
-    
+
     ret = ioctl(fd_, I2C_SMBUS, &args);
-    
+
     if (ret < 0){
         int err = errno;
         LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : " << strerror(err) << std::endl;
@@ -95,35 +94,32 @@ int I2C_Device::write_byte_data(uint8_t cmd, uint8_t data){
     //debug
     std::bitset<8> c(cmd);
     std::bitset<8> d(data);
-    LOG << "writting to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << ") : " << 
-    c << " : " << d << std::dec << std::endl;
-    
+    //LOG << "writting to chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << ") : " << c << " : " << d << std::dec << std::endl;
+
     int ret = 0;
-    
+
     struct i2c_smbus_ioctl_data args;
     //read or write
     args.read_write = I2C_SMBUS_WRITE;
     //sub-addr
     args.command = cmd;
     args.size = I2C_SMBUS_BYTE_DATA;
-    
+
     //args.size = I2C_SMBUS_BLOCK_DATA;
     //array [length, data0, ... dataN]
     union i2c_smbus_data i2c_data;
     //i2c_data.block[0] = 1;
     //i2c_data.block[1] = data;
     i2c_data.byte = data;
-    
+
     args.data = &i2c_data;
-    
+
     ret = ioctl(fd_, I2C_SMBUS, &args);
-    
+
     if (ret < 0){
         int err = errno;
         LOG << "error writing to i2c device chan (" << channel_ << ") addr (" << std::hex << (int)addr_ << std::dec << ") : " << strerror(err) << std::endl;
     }
-    LOG << "ret : " << ret << std::endl;
-    
+
     return ret;
 }
-

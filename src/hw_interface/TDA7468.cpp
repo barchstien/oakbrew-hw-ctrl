@@ -134,12 +134,12 @@ void TDA7468::volume(int v){
     //apply balance
     LOG << "balance : " << balance_ << " abs(balance_) * v / 50 : " << abs(balance_) * v / 50 << std::endl;
     if (balance_ < 0){
-        volume_1 = v - abs(balance_ * 87) / 50;
+        volume_1 = v - abs(balance_ * (87 - abs(v))) / 50;
         if (volume_1 < -87){
             volume_1 = -87;
         }
     }else if (balance_ > 0){
-        volume_2 = v - abs(balance_ * 87) / 50;
+        volume_2 = v - abs(balance_ * (87 - abs(v))) / 50;
         if (volume_2 < -87){
             volume_2 = -87;
         }

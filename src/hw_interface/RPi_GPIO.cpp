@@ -65,7 +65,7 @@ unsigned int* RPi_GPIO::get_gpio_ptr(){
     close(mem_fd); //No need to keep mem_fd open after mmap
 
     if (gpio_map == MAP_FAILED) {
-        printf("mmap error %d\n", (int)gpio_map);//errno also set!
+        printf("mmap error %p\n", (int*)gpio_map);//errno also set!
         exit(-1);
     }
 
@@ -85,7 +85,7 @@ void RPi_GPIO::unexport_all(){
     }
 }
 
-/**Macro for all void fuctions 
+/**Macro for all void fuctions
 This avoids to access out of bound memory of pin_array */
 #define PIN_NUM_CHECK(x) if (x > NUM_OF_GPIO - 1){\
                             LOG << x << " is not a valid pin number : [0 - " << NUM_OF_GPIO << "]"<< endl;\
@@ -176,7 +176,7 @@ void RPi_GPIO::setPulloff(unsigned int pin){
 void RPi_GPIO::setPullResistor(unsigned int pin, int pull){
     PIN_NUM_CHECK(pin);
     unsigned int* gpio = get_gpio_ptr();
-    
+
     if (gpio == 0)
         LOG << "Error : setup_io() was not called, aborting setPullResistor()" << endl;
     if (! pin_array[pin].exported)
@@ -193,12 +193,12 @@ void RPi_GPIO::setPullResistor(unsigned int pin, int pull){
     //set pull mode
     *(gpio + REG_GPPUD) = pull;
     WAIT_150_CYCLES;
-    
+
     //enable clock on pin
     *(gpio + REG_GPPUDCLK0 + (pin/32)) = 1 << (pin%32);
     WAIT_150_CYCLES;
 
-    //clean registers    
+    //clean registers
     *(gpio + REG_GPPUD) = 0;
     *(gpio + REG_GPPUDCLK0 + (pin/32)) = 0;
 
@@ -208,7 +208,7 @@ void RPi_GPIO::setPullResistor(unsigned int pin, int pull){
 void RPi_GPIO::setAlt(unsigned int pin, unsigned int alt){
     PIN_NUM_CHECK(pin);
     unsigned int* gpio = get_gpio_ptr();
-    
+
     if (gpio == 0)
         LOG << "Error : setup_io() was not called, aborting setAlt()" << endl;
     if (alt < 0 || alt > 5){
@@ -238,7 +238,7 @@ void RPi_GPIO::setAlt(unsigned int pin, unsigned int alt){
     tmp |= new_val << bit_offset;
     *(gpio + reg_offset) = tmp;
     pin_array[pin].alt = alt;
-    
+
     close_gpio_ptr(gpio);
 }
 

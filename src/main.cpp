@@ -109,12 +109,9 @@ int main(int argc, char *argv[]){
         tmp = adc.get_value(config.bass_channel);
         if (tmp > (bass + ADC_THRESHOLD) || tmp < (bass - ADC_THRESHOLD)){
             bass = tmp;
-
-            //TODO debug
-            //map to [0; 14]
-            //value is rounded @ 2db by sound_ctrl
+            //map to [0; 14], value is rounded @ 2db by sound_ctrl
             int b = (bass * 15 / MCP3008::MAX_VALUE -7) * 2;
-            LOG << "bass : " << bass << "  set db : " << b << std::endl;
+            //LOG << "bass : " << bass << "  set db : " << b << std::endl;
             sound_ctrl.bass(b);
         }
 
@@ -122,7 +119,10 @@ int main(int argc, char *argv[]){
         tmp = adc.get_value(config.treble_channel);
         if (tmp > (treble + ADC_THRESHOLD) || tmp < (treble - ADC_THRESHOLD)){
             treble = tmp;
-            LOG << "treble : " << treble << std::endl;
+            //map to [0; 14], value is rounded @ 2db by sound_ctrl
+            int t = (treble * 15 / MCP3008::MAX_VALUE -7) * 2;
+            //LOG << "treble : " << treble << "  set db : " << t << std::endl;
+            sound_ctrl.treble(t);
         }
 
         //LOG << "blop" << std::endl;

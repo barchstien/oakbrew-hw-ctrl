@@ -178,12 +178,7 @@ void TDA7468::bass(int b){
 
     bass_ = b;
     LOG << "setting bass to : " << bass_ << std::endl;
-
     uint8_t data = encode_bass_treble(bass_, treble_);
-
-    //debug
-    std::bitset<8> x(data);
-    LOG << "to chip : " << x << std::endl;
 
     write_byte_data(SUB_ADDR_TREBLE_BASS, data);
 }
@@ -205,12 +200,7 @@ void TDA7468::treble(int t){
 
     treble_ = t;
     LOG << "setting treble to : " << treble_ << std::endl;
-
     uint8_t data = encode_bass_treble(bass_, treble_);
-
-    //debug
-    std::bitset<8> x(data);
-    std::cout << "to chip : " << x << std::endl;
 
     write_byte_data(SUB_ADDR_TREBLE_BASS, data);
 }

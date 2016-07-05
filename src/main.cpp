@@ -102,7 +102,11 @@ int main(int argc, char *argv[]){
         tmp = adc.get_value(config.balance_channel);
         if (tmp > (balance + ADC_THRESHOLD) || tmp < (balance - ADC_THRESHOLD)){
             balance = tmp;
-            LOG << "balance : " << balance << std::endl;
+            int b = balance / 10 - 50;
+            LOG << "balance : " << balance << " set balance : " << b << std::endl;
+            sound_ctrl.balance(b);
+            //update volume
+            sound_ctrl.volume(sound_ctrl.volume());
         }
 
         //bass

@@ -73,8 +73,8 @@
 
 TDA7468::TDA7468(uint8_t addr, int channel)
     : I2C_Device(addr, channel),
-    volume_(0xffff), input_gain_(0xffff), bass_(0xffff), treble_(0xffff),
-    mute_(false), input_(0xffff), balance_(0xffff)
+    volume_(0xffff), input_gain_(0), bass_(0), treble_(0),
+    mute_(false), input_(1), balance_(0)
 {
     LOG << "start init TDA 7468" << std::endl;
     init_I2C();
@@ -127,38 +127,56 @@ void TDA7468::volume(int v){
     }else if (v > 14){
         v = 14;
     }
-    //LOG << "Setting volume to " << v << std::endl;
 
     volume_ = v;
+    int volume_1 = v, volume_2 = v;
+
+    //apply balance
+    LOG << "balance : " << balance_ << " abs(balance_) * v / 50 : " << abs(balance_) * v / 50 << std::endl;
+    if (balance_ < 0){
+        volume_1 = v - abs(balance_ * 87) / 50;
+        if (volume_1 < -87){
+            volume_1 = -87;
+        }
+    }else if (balance_ > 0){
+        volume_2 = v - abs(balance_ * 87) / 50;
+        if (volume_2 < -87){
+            volume_2 = -87;
+        }
+    }
+    LOG << "Setting volume_1 to " << volume_1  << "  volume_2 to " << volume_2 << std::endl;
+
+    set_volume_to_channel(SUB_ADDR_VOLUME_LEFT, volume_1);
+    set_volume_to_channel(SUB_ADDR_VOLUME_RIGHT, volume_2);
+}
+
+void TDA7468::set_volume_to_channel(uint8_t chan, int v){
     uint8_t v1_1db, v1_8db, v2_8db, input_gain;
-    if (volume_ < 0){
-        int v_abs = -1 * volume_;
+    if (v < 0){
+        int v_abs = -1 * v;
         v1_1db = v_abs % 8;
         v1_8db = ((v_abs - v1_1db) / 8);
         if (v1_8db > 7){
             v1_8db = 7;
         }
         v2_8db = ((v_abs - v1_1db) / 8) - v1_8db;
-        //LOG << "v1_1db : "<<(int)v1_1db <<"   v1_8db : "<<(int)v1_8db <<"   v2_8db : "<<(int)v2_8db << std::endl;
+        LOG << "v1_1db : "<<(int)v1_1db <<"   v1_8db : "<<(int)v1_8db <<"   v2_8db : "<<(int)v2_8db << std::endl;
         input_gain = 0;
     }else{
         v1_1db = 0;
         v1_8db = 0;
         v2_8db = 0;
-        input_gain = volume_ / 2;
+        //input gain ignored for now (same for both channels)
+        input_gain = v / 2;
     }
-
-    //chip addr has been set with ioctl(...)
-
-    //TODO consider balance
 
     uint8_t data = 0;
     data = (v2_8db << 6) | (v1_8db << 3) | v1_1db;
-    write_byte_data(SUB_ADDR_VOLUME_LEFT, data);
+    write_byte_data(chan, data);
 
-    write_byte_data(SUB_ADDR_VOLUME_RIGHT, data);
-
-    write_byte_data(SUB_ADDR_INPUT_GAIN, input_gain);
+    //TODO ? input_gain_ ???
+    //not used for now, for both channels
+    //write_byte_data(SUB_ADDR_INPUT_GAIN, input_gain);
 }
 
 
@@ -247,8 +265,17 @@ int TDA7468::balance(){
     return balance_;
 }
 
-void TDA7468::balance(int b){
-    //TODO
+bool TDA7468::balance(int b){
+    if (b < -50){
+        b = -50;
+    }else if (b > 50){
+        b = 50;
+    }
+    if (balance_ != b){
+        balance_ = b;
+        return true;
+    }
+    return false;
 }
 
 

@@ -10,8 +10,8 @@ public:
 
     /** get/set volume [-87db : +14db], 1db step for v<=0, 2db step v>0
     set using Volume1 in 1db and 8db steps, Volume2 and input gain */
-    int volume();
     void volume(int v);
+    int volume();
 
     /** [-14db : +14db] 2db step */
     int bass();
@@ -28,15 +28,18 @@ public:
     int input();
     void input(int n);
 
-    /** [-100 : 100]
+    /** [-50 : 50]
       0 means mid-point
-      -100 : right channel -100% volume
-      +100 : left channel -100% volume*/
+      -50 : right channel -100% volume
+      +50 : left channel -100% volume
+      @return true if balance was changed */
     int balance();
-    void balance(int b);
+    bool balance(int b);
 
 private:
     int volume_;
+
+    //not used for now...
     int input_gain_;
 
     int bass_;
@@ -49,6 +52,8 @@ private:
     int balance_;
 
     uint8_t encode_bass_treble(int bass, int treble);
+
+    void set_volume_to_channel(uint8_t chan, int v);
 };
 
 #endif

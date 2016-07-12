@@ -3,7 +3,7 @@
 C11 gcc
 depends on : libconfig
 
-= build & deploy =
+## build & deploy
 ```bash
 pacman -Sy --needed libconfig cmake gcc git
 git clone git@github.com:barchstien/oakbrew-hw-ctrl.git
@@ -21,7 +21,7 @@ systemctl enable oakbrew-hw-control
 systemctl start oakbrew-hw-control
 ```
 
-= config =
+## config
 
 enable SPI, I2C, I2S and compatible PCM512X driver (IQAudio)
 ```bash

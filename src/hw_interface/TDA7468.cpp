@@ -132,7 +132,7 @@ void TDA7468::volume(int v){
     int volume_1 = v, volume_2 = v;
 
     //apply balance
-    LOG << "balance : " << balance_ << " abs(balance_) * v / 50 : " << abs(balance_) * v / 50 << std::endl;
+    //LOG << "balance : " << balance_ << " abs(balance_) * v / 50 : " << abs(balance_) * v / 50 << std::endl;
     if (balance_ < 0){
         volume_1 = v - abs(balance_ * (87 - abs(v))) / 50;
         if (volume_1 < -87){
@@ -144,7 +144,7 @@ void TDA7468::volume(int v){
             volume_2 = -87;
         }
     }
-    LOG << "Setting volume_1 to " << volume_1  << "  volume_2 to " << volume_2 << std::endl;
+    //LOG << "Setting volume_1 to " << volume_1  << "  volume_2 to " << volume_2 << std::endl;
 
     set_volume_to_channel(SUB_ADDR_VOLUME_LEFT, volume_1);
     set_volume_to_channel(SUB_ADDR_VOLUME_RIGHT, volume_2);
@@ -160,7 +160,7 @@ void TDA7468::set_volume_to_channel(uint8_t chan, int v){
             v1_8db = 7;
         }
         v2_8db = ((v_abs - v1_1db) / 8) - v1_8db;
-        LOG << "v1_1db : "<<(int)v1_1db <<"   v1_8db : "<<(int)v1_8db <<"   v2_8db : "<<(int)v2_8db << std::endl;
+        //LOG << "v1_1db : "<<(int)v1_1db <<"   v1_8db : "<<(int)v1_8db <<"   v2_8db : "<<(int)v2_8db << std::endl;
         input_gain = 0;
     }else{
         v1_1db = 0;
@@ -195,7 +195,7 @@ void TDA7468::bass(int b){
     }
 
     bass_ = b;
-    LOG << "setting bass to : " << bass_ << std::endl;
+    //LOG << "setting bass to : " << bass_ << std::endl;
     uint8_t data = encode_bass_treble(bass_, treble_);
 
     write_byte_data(SUB_ADDR_TREBLE_BASS, data);
@@ -217,7 +217,7 @@ void TDA7468::treble(int t){
     }
 
     treble_ = t;
-    LOG << "setting treble to : " << treble_ << std::endl;
+    //LOG << "setting treble to : " << treble_ << std::endl;
     uint8_t data = encode_bass_treble(bass_, treble_);
 
     write_byte_data(SUB_ADDR_TREBLE_BASS, data);
@@ -244,10 +244,10 @@ int TDA7468::input(){
 }
 
 void TDA7468::input(int n){
-    if (n < 1){
-        n = 1;
-    }else if (n > 4){
-        n = 4;
+    if (n < 0){
+        n = 0;
+    }else if (n > 3){
+        n = 3;
     }
     LOG << "switching to input number : " << n << std::endl;
     /*if (input_ == n){
@@ -256,7 +256,7 @@ void TDA7468::input(int n){
 
     input_ = n;
 
-    uint8_t data = (n - 1) | INPUT_MIC_OFF;
+    uint8_t data = n | INPUT_MIC_OFF;
     write_byte_data(SUB_ADDR_INPUT_SELECT_MIC, data);
 }
 

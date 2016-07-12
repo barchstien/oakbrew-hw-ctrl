@@ -17,13 +17,13 @@ public:
     @param cmd the command to execute
     @return the string returned by the bash command or "ERROR" if Pipe couldn't be created */
     static std::string exec_read_bash(std::string cmd);
-    
+
     /** execute a bash command and return the pid of the new process
     DOES NOT read the output of the forked process
     @param cmd the command to execute
     @return pid ofthe forked process*/
     static int fork_exec_bash(const char* cmd);
-    
+
     static std::string get_time_string();
 };
 
@@ -34,12 +34,12 @@ struct Message{
     Message(int label) : label(label) {}
     Message(int label, std::string str) : label(label), data_string(str) {}
     ~Message() {}
-    
+
     /** the command to execute */
     int label;
     /** data to be used for executing cmd */
     std::string data_string;
-    
+
     static const int MESSAGE_TYPE = 0;
     virtual int message_type(){return MESSAGE_TYPE;};
     virtual std::string print(){
@@ -86,6 +86,7 @@ struct Config{
     unsigned int bass_channel;
     unsigned int treble_channel;
 
+    unsigned int rpi_gpio_swith_dac;
 };
 
 

@@ -24,7 +24,7 @@ public:
     bool mute_output();
     void mute_output(bool m);
 
-    /** (1 : 4] **/
+    /** (0 : 3] **/
     int input();
     void input(int n);
 

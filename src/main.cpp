@@ -71,6 +71,12 @@ int main(int argc, char *argv[]){
     LOG << "bass-channel : " << config.bass_channel << std::endl;
     LOG << "treble-channel : " << config.treble_channel << std::endl;
 
+    libconfig::Setting &mux_config = root["mux"];
+    mux_config.lookupValue("rpi-gpio-switch-dac", config.rpi_gpio_swith_dac);
+    LOG << "rpi-gpio-switch-dac : " << config.rpi_gpio_swith_dac << std::endl;
+    RPi_GPIO::exportPin(config.rpi_gpio_swith_dac);
+    RPi_GPIO::setInput(config.rpi_gpio_swith_dac);
+
     TDA7468 sound_ctrl;
 
     MCP3008 adc(config.spi_channel);
@@ -82,6 +88,7 @@ int main(int argc, char *argv[]){
     std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
     int volume = 0, balance = 0, bass = 0, treble = 0;
+    int audio_input = -1;
     int tmp = -1;
 
     LOG << "main loop ..." << std::endl;
@@ -129,79 +136,21 @@ int main(int argc, char *argv[]){
             sound_ctrl.treble(t);
         }
 
+        //input
+        tmp = RPi_GPIO::read(config.rpi_gpio_swith_dac);
+        if (tmp != audio_input){
+            audio_input = tmp;
+            sound_ctrl.input(audio_input);
+        }
+
         //LOG << "blop" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-
-    return 0;
-
-
-
-    //this_thread::sleep_for(chrono::milliseconds(500));
-    //sound_ctrl.mute(false);
-    //this_thread::sleep_for(chrono::milliseconds(500));
-    //set to 14 to enable input gain
-    //sound_ctrl.volume(0);
-    //this_thread::sleep_for(chrono::milliseconds(10));
 
     //DAC is input 1
     //sound_ctrl.input(1);
     //this_thread::sleep_for(chrono::milliseconds(500));
 
-#if 0
-    for (int i=-87; i<15; i++){
-        sound_ctrl.volume(i);
-        this_thread::sleep_for(chrono::milliseconds(1000));
-    }
-#endif
-
-    int v = -87;
-    sound_ctrl.volume(v);
-    while (true){
-        std::cout << "volume : " << std::endl;
-        std::cin >> v;
-        if(std::cin.fail())
-        {
-            // user didn't input a number
-            std::cin.clear(); // reset failbit
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //skip bad input
-            // next, request user reinput
-        }else{
-            sound_ctrl.volume(v);
-        }
-    }
-
-#if 0
-    ///
-    RPi_GPIO::exportPin(GPIO_UNMUTE);
-    RPi_GPIO::setOutput(GPIO_UNMUTE);
-
-
-    this_thread::sleep_for(chrono::milliseconds(1000));
-    shared_ptr<PCM512x_spi> pcm512x_spi_ptr;
-    pcm512x_spi_ptr = shared_ptr<PCM512x_spi>(new PCM512x_spi(PCM512X_SPI_CHAN));
-    this_thread::sleep_for(chrono::milliseconds(1000));
-
-    //unmute
-    LOG << "unmuting DAC" << endl;
-    RPi_GPIO::write(GPIO_UNMUTE, 0);
-    this_thread::sleep_for(chrono::milliseconds(500));
-    RPi_GPIO::write(GPIO_UNMUTE, 1);
-    //this_thread::sleep_for(chrono::milliseconds(500));
-    //RPi_GPIO::write(GPIO_UNMUTE, 0);
-    //this_thread::sleep_for(chrono::milliseconds(500));
-
-    LOG << "init finished" << std::endl;
-
-    while (true){
-        //RPi_GPIO::write(GPIO_UNMUTE, 1);
-        this_thread::sleep_for(chrono::milliseconds(2000));
-        //RPi_GPIO::write(GPIO_UNMUTE, 0);
-        //this_thread::sleep_for(chrono::milliseconds(2000));
-    }
-#endif
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     LOG << "End World" << std::endl;
     return 0;
 }

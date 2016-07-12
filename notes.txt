@@ -2,11 +2,9 @@
 _ no need for PCM512x_spi.h/cpp coz using now i2c with i2s, default driver should be ok ?
   PCM 5122 XSMT pin has been tied to 3.3v, so shouldn't need the unmute either
 _ RPI_GPIO uses some nmap that maybe rpi 2 specific
-_ 
+_
 
 
 TODO
-  - enable i2c, i2s and spi
-  - read MCP3008 for pots
   - read 2 switches button
   - make LED PWM

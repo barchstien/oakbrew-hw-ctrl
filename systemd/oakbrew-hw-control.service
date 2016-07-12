@@ -2,11 +2,10 @@
 Description=OakBrew HW control After=network.target
 
 [Service]
-WorkingDirectory=/root/dev/oakbrew-player-hw-control/build
-ExecStart=/root/dev/oakbrew-hw-control/build/oakbrew-hw-control
+WorkingDirectory=/root/dev/oakbrew-player-hw-control-build
+ExecStart=/root/dev/oakbrew-hw-control-build/oakbrew-hw-control
 TimeoutSec=0
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
-

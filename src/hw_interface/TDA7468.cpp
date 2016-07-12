@@ -227,7 +227,7 @@ void TDA7468::input(int n){
     }else if (n > 3){
         n = 3;
     }
-    LOG << "switching to input number : " << n << std::endl;
+    //LOG << "switching to input number : " << n << std::endl;
     /*if (input_ == n){
         return;
     }*/

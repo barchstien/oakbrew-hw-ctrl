@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
 
             //TODO debug
             int v = volume * 87 / MCP3008::MAX_VALUE -87;
-            LOG << "volume : " << volume << "  set db : " << v << std::endl;
+            //LOG << "volume : " << volume << "  set db : " << v << std::endl;
             sound_ctrl.volume(v);
         }
 
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]){
         if (tmp > (balance + ADC_THRESHOLD) || tmp < (balance - ADC_THRESHOLD)){
             balance = tmp;
             int b = balance / 10 - 50;
-            LOG << "balance : " << balance << " set balance : " << b << std::endl;
+            //LOG << "balance : " << balance << " set balance : " << b << std::endl;
             sound_ctrl.balance(b);
             //update volume
             sound_ctrl.volume(sound_ctrl.volume());

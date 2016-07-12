@@ -14,7 +14,7 @@ make -j
 #install the service
 #assuming all is in /root/dev/
 cd ../oakbrew-hw-ctrl
-cp systemd/oakbrew-hw-control.service /etc/systemd/system
+cp systemd/oakbrew-hw-control.service /etc/systemd/system/
 #enable at boot time
 systemctl enable oakbrew-hw-control
 #start

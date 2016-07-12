@@ -52,24 +52,7 @@
 #define OUTPUT_MUTE_ON  0b00000000
 #define OUTPUT_MUTE_OFF 0b00000001
 
-// Conclusion :
-// Scale volume from -87db to (0db) +14db, total (88) 102 steps. !! last 1 steps by 2db
-// volume = 8 * V2_8db + 8 * V1_8db + V1_1db +
-// from ADC, get targeted volume, that uses 1024 steps
-// divide ADC by div = (1024 / num_steps). Avoid "edge" values leading to lots of volume change like this :
-// |--> keep current_val, which is ((old_read + div/2) % div)
-// |--> Only change volume when ((new_read + div/2) % div) changes from current_val
-//
-// Considering Target_V as absolute value [0; 87]
-// V1_1db = Target_V % 8
-// V1_8db = (Target_V / 8) % 8
-// V2_8db = Target_V / 8 - V1_8db
-//
-// if Target_V > 0
-//   sel V1_1db, V1_8db and V2_8db to 0
-//   set V_in_gain = Target_V / 2
-
-#define SLEEP_MSEC 5
+#define SLEEP_MSEC 1
 
 TDA7468::TDA7468(uint8_t addr, int channel)
     : I2C_Device(addr, channel),
@@ -79,11 +62,9 @@ TDA7468::TDA7468(uint8_t addr, int channel)
     LOG << "start init TDA 7468" << std::endl;
     init_I2C();
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
-    //write_byte(POWER_ON_RESET);
-    //std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
-    //DAC is input 1
-    input(1);
+    //DAC is input 0
+    input(0);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
 
     //volume to lowest
@@ -94,7 +75,7 @@ TDA7468::TDA7468(uint8_t addr, int channel)
     write_byte_data(SUB_ADDR_SURROUND, 0b00011000);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
 
-    //trebel & bass to mid point for test
+    //trebel & bass to mid point
     write_byte_data(SUB_ADDR_TREBLE_BASS, 0b11111111);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
 
@@ -105,9 +86,6 @@ TDA7468::TDA7468(uint8_t addr, int channel)
     //turn off bass ALC
     write_byte_data(SUB_ADDR_BASS_ALC, 0b00000000);
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MSEC));
-
-    //write_byte(POWER_ON_RESET);
-    //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     LOG << "end init TDA 7468" << std::endl;
 }
